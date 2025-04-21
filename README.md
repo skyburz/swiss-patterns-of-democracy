@@ -2,7 +2,7 @@
 
 An interactive Shiny application for exploring democratic patterns and trends in Switzerland. This application visualizes various aspects of Swiss democracy, including cantonal institutions, direct democracy measures, and electoral data.
 
-Data source: Vatter, Adrian; Arnold, Tobias; Arens, Alexander; Vogel, Laura-Rosa; Bühlmann, Marc; Schaub, Hans-Peter; Dlabac, Oliver; Wirz, Rolf; Freiburghaus, Rahel; Della Porta, Davide (2024): Patterns of Democracy in the Swiss Cantons, 1979–2023 [Dataset]. Bern: Universität Bern, Institut für Politikwissenschaft. TEST
+Data source: Vatter, Adrian; Arnold, Tobias; Arens, Alexander; Vogel, Laura-Rosa; Bühlmann, Marc; Schaub, Hans-Peter; Dlabac, Oliver; Wirz, Rolf; Freiburghaus, Rahel; Della Porta, Davide (2024): Patterns of Democracy in the Swiss Cantons, 1979–2023 [Dataset]. Bern: Universität Bern, Institut für Politikwissenschaft.
 
 ## Features
 
