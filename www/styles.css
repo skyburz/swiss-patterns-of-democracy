@@ -1,0 +1,84 @@
+/* Custom CSS for Swiss Patterns of Democracy App */
+
+/* Add some breathing room */
+body {
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
+/* Make headers stand out */
+h1, h2, h3 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Style value boxes */
+.value-box {
+  transition: transform 0.2s ease;
+}
+
+.value-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Make cards more interesting */
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 7px 14px rgba(0,0,0,0.1);
+}
+
+/* Style filters in sidebar */
+.sidebar .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar .control-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+/* Style plot container */
+.plotly, .plot-container {
+  border-radius: 0.4rem;
+  overflow: hidden !important;
+}
+
+/* Style tables */
+.dataTables_wrapper {
+  padding: 1rem 0;
+}
+
+.dataTables_wrapper .dataTables_length, 
+.dataTables_wrapper .dataTables_filter {
+  margin-bottom: 1rem;
+}
+
+/* Animation for visualizations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.plot-output-container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Footer styling */
+.footer {
+  margin-top: 2rem;
+  padding: 1rem 0 2rem 0;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6c757d;
+  border-top: 1px solid #dee2e6;
+} 
