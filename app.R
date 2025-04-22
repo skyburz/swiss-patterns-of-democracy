@@ -7,6 +7,7 @@ source("R/helpers.R")
 source("R/democratic_institutions_module.R")
 source("R/direct_democracy_module.R")
 source("R/canton_map_module.R")
+source("R/elections_module.R")
 
 # User Interface ---------------------------------------------------------
 ui <- page_navbar(
@@ -103,6 +104,15 @@ ui <- page_navbar(
     canton_map_ui("canton_map")
   ),
   
+  # Elections page
+  nav_panel(
+    title = "Wahlen",
+    icon = bsicons::bs_icon("check-square"),
+    
+    # Add our elections module UI here
+    elections_ui("elections")
+  ),
+  
   # About page
   nav_panel(
     title = "Über",
@@ -180,6 +190,9 @@ server <- function(input, output, session) {
   
   # Call canton map module server and pass the cantonal data
   canton_map_server("canton_map", cantonal_data)
+  
+  # Call elections module server and pass the selected_data reactive
+  elections_server("elections", selected_data)
 }
 
 # Run the application
