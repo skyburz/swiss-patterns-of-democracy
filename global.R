@@ -20,7 +20,10 @@ options(shiny.autoreload = TRUE)  # Auto reload app during development
 
 # Helper function to list available datasets in the data folder
 list_data_files <- function() {
-  files <- list.files("data", pattern = "\\.csv$|\\.rds$|\\.xlsx$", full.names = FALSE)
+  # Only return CSV files, excluding the Excel file
+  files <- list.files("data", pattern = "\\.csv$", full.names = FALSE)
+  # Make sure we're not including any Excel files
+  files <- files[!grepl("\\.xlsx$", files)]
   return(files)
 }
 
@@ -28,19 +31,18 @@ list_data_files <- function() {
 load_dataset <- function(filename) {
   filepath <- file.path("data", filename)
   
-  # Handle different file types
+  # Only handle CSV files
   if (grepl("\\.csv$", filepath)) {
-    return(read.csv(filepath))
-  } else if (grepl("\\.rds$", filepath)) {
-    return(readRDS(filepath))
-  } else if (grepl("\\.xlsx$", filepath)) {
-    return(readxl::read_excel(filepath))
+    data <- read.csv(filepath)
+    # Convert any "." values to NA
+    data <- data.frame(lapply(data, function(x) ifelse(x == ".", NA, x)))
+    return(data)
   } else {
-    stop("Unsupported file format")
+    stop("Only CSV files are supported")
   }
 }
 
-# Load cantonal data
+# Load cantonal data from CSV
 cantonal_data <- read.csv("data/cantonal_democracy_data.csv")
 
 # Add custom theme settings
