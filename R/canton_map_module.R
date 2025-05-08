@@ -10,8 +10,8 @@ library(jsonlite)
 library(geojsonio)  # For handling GeoJSON/TopoJSON data
 library(viridis)
 
-# Source the canton mapping functions
-source("R/canton_mapping.R")
+# Source the canton reference functions
+source("R/canton_reference.R")
 
 #' UI function for canton map module
 #' @param id The module ID
@@ -73,15 +73,32 @@ canton_map_server <- function(id, data) {
         # Read the TopoJSON file and convert to SF object
         cantons <- topojson_read("data/swiss-maps.json", "cantons")
         
-        # Convert full canton names to abbreviations
-        cantons$kanton_abbr <- sapply(cantons$name, function(name) {
-          abbr <- get_canton_abbr(name)
-          if (is.null(abbr)) {
+        # Create a custom mapping function for the special cases in the map data
+        map_canton_name <- function(name) {
+          # Create a mapping for the special multilingual canton names
+          special_cases <- list(
+            "Bern / Berne" = "BE",
+            "Fribourg / Freiburg" = "FR",
+            "Graubünden / Grigioni / Grischun" = "GR",
+            "Valais / Wallis" = "VS"
+          )
+          
+          # Check if the name is in our special cases
+          if (name %in% names(special_cases)) {
+            return(special_cases[[name]])
+          }
+          
+          # If not a special case, use standardize_canton from canton_reference.R
+          abbr <- standardize_canton(name)
+          if (is.na(abbr)) {
             warning(paste("Could not find abbreviation for canton:", name))
-            return(NA)  # Return NA instead of NULL for better compatibility
+            return(NA)
           }
           return(abbr)
-        })
+        }
+        
+        # Apply our custom mapping function
+        cantons$kanton_abbr <- sapply(cantons$name, map_canton_name)
         
         # Print debug information about the mapping
         print("Canton name mapping:")

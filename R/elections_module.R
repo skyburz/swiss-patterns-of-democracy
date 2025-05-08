@@ -15,16 +15,39 @@ source("R/canton_reference.R")
 #' Prepare election data in long format
 #' @param data The input dataset
 #' @param year The selected year
-#' @param variable_type Either "parlament_sitze" or "regierung_sitze"
+#' @param variable_type Either "parlament_sitze", "parlament_sitze_anteil", "parlament_votes", "parl_election", or "regierung_sitze"
 #' @return A dataframe in long format with election data
 prepare_election_data <- function(data, year, variable_type = "parlament_sitze") {
   # Get column names
   year_col <- names(data)[grep("year|jahr", names(data), ignore.case = TRUE)[1]]
   
   # Get party columns based on variable type
-  party_cols <- if(variable_type == "parlament_sitze") {
-    # Only use columns ending with _parl_s for parliamentary seats
-    names(data)[grep("_parl_s$", names(data))]
+  if(variable_type == "parl_election") {
+    # For parliamentary elections, clean the data first
+    election_data <- data %>%
+      filter(!!sym(year_col) == year) %>%
+      select(kantonnr, `parl_election...97`) %>%
+      mutate(
+        canton_abbrev = sapply(kantonnr, get_canton_abbr),
+        canton_name = sapply(canton_abbrev, function(abbr) get_canton_name(abbr, "de")),
+        # First convert "." to NA
+        parl_election = ifelse(`parl_election...97` == ".", NA, `parl_election...97`),
+        # Then convert to numeric (0 or 1)
+        parl_election = as.numeric(parl_election),
+        # Use the cleaned value
+        parl_sitze_partei = parl_election
+      ) %>%
+      filter(!is.na(parl_election))  # Remove any NA values
+    return(election_data)
+  }
+  
+  party_cols <- if(variable_type %in% c("parlament_sitze", "parlament_sitze_anteil", "parlament_votes")) {
+    # Use columns ending with _parl_s for parliamentary seats and _parl_v for votes
+    if(variable_type == "parlament_votes") {
+      names(data)[grep("_parl_v$", names(data))]
+    } else {
+      names(data)[grep("_parl_s$", names(data))]
+    }
   } else {
     # For government seats, keep all relevant columns
     names(data)[grep("_reg_[sv]$|_reg_sa$", names(data))]
@@ -60,6 +83,18 @@ prepare_election_data <- function(data, year, variable_type = "parlament_sitze")
       canton_abbrev = sapply(kantonnr, get_canton_abbr),
       canton_name = sapply(canton_abbrev, function(abbr) get_canton_name(abbr, "de"))
     )
+  
+  # Calculate percentages if variable_type is parlament_sitze_anteil
+  if (variable_type == "parlament_sitze_anteil") {
+    election_data <- election_data %>%
+      group_by(kantonnr) %>%
+      mutate(
+        total_sitze = sum(parl_sitze_partei, na.rm = TRUE),
+        # Keep precise percentages for calculations
+        parl_sitze_partei = 100 * parl_sitze_partei / total_sitze
+      ) %>%
+      ungroup()
+  }
   
   # Debug print for Bern
   print("Data for Bern:")
@@ -308,6 +343,9 @@ elections_server <- function(id, selected_data) {
       # Create named choices for better display - two options
       named_choices <- c(
         "Anzahl Parlamentssitze der Parteien" = "parlament_sitze",
+        "Anteil Parlamentssitze der Parteien" = "parlament_sitze_anteil",
+        "Wähleranteil der Parteien (%)" = "parlament_votes",
+        "Parlamentswahl im Jahr" = "parl_election",
         "Anzahl Regierungsratssitze der Parteien" = "regierung_sitze"
       )
       
@@ -426,9 +464,65 @@ elections_server <- function(id, selected_data) {
       year_col <- names(data)[grep("year|jahr", names(data), ignore.case = TRUE)[1]]
       
       # Get party columns based on selected variable
-      if (input$variables == "parlament_sitze") {
-        party_cols <- names(data)[grep("_parl_s$", names(data))]
-        title <- "Anzahl Parlamentssitze der Parteien"
+      if (input$variables == "parl_election") {
+        # For parliamentary elections, count the number of elections per year
+        # Create a simpler approach to avoid complex expressions
+        election_data <- data %>%
+          # Fix: Use the correct column name parl_election...97
+          mutate(parl_election = as.numeric(ifelse(`parl_election...97` == ".", NA, `parl_election...97`))) %>%
+          filter(!is.na(parl_election)) %>%
+          group_by(!!sym(year_col)) %>%
+          summarise(
+            election_count = sum(parl_election == 1, na.rm = TRUE)
+          ) %>%
+          ungroup()
+        
+        # Convert the year column to a simple numeric vector for plotting
+        years <- as.numeric(election_data[[year_col]])
+        counts <- election_data$election_count
+        
+        # Create plot with direct data values
+        p <- plot_ly() %>%
+          add_trace(
+            x = years,
+            y = counts,
+            type = "scatter",
+            mode = "lines+markers",
+            line = list(color = "#4646B4", width = 2),
+            marker = list(color = "#4646B4", size = 8),
+            hoverinfo = "text",
+            text = paste("Jahr:", years, "<br>Anzahl Wahlen:", counts)
+          ) %>%
+          layout(
+            title = "Anzahl Parlamentswahlen pro Jahr",
+            xaxis = list(
+              title = "Jahr",
+              tickmode = "linear",
+              dtick = 2
+            ),
+            yaxis = list(
+              title = "Anzahl Wahlen",
+              rangemode = "tozero"
+            ),
+            showlegend = FALSE,
+            hovermode = "closest"
+          )
+        
+        return(p)
+      }
+      
+      if (input$variables %in% c("parlament_sitze", "parlament_sitze_anteil", "parlament_votes")) {
+        if(input$variables == "parlament_votes") {
+          party_cols <- names(data)[grep("_parl_v$", names(data))]
+          title <- "Wähleranteil der Parteien (%)"
+        } else {
+          party_cols <- names(data)[grep("_parl_s$", names(data))]
+          title <- if(input$variables == "parlament_sitze") {
+            "Anzahl Parlamentssitze der Parteien"
+          } else {
+            "Anteil Parlamentssitze der Parteien"
+          }
+        }
       } else {
         party_cols <- names(data)[grep("_reg_[sv]$|_reg_sa$", names(data))]
         title <- "Anzahl Regierungsratssitze der Parteien"
@@ -455,45 +549,115 @@ elections_server <- function(id, selected_data) {
         ) %>%
         filter(!is.na(parl_sitze_partei))
       
-      # Group by year and party, summing seats
+      # Calculate percentages if needed
+      if (input$variables == "parlament_sitze_anteil") {
+        long_data <- long_data %>%
+          group_by(get(year_col)) %>%
+          mutate(
+            total_sitze = sum(parl_sitze_partei, na.rm = TRUE),
+            # Keep precise percentages for calculations
+            parl_sitze_partei = 100 * parl_sitze_partei / total_sitze
+          ) %>%
+          ungroup()
+      }
+      
+      # Group by year and party, summing seats or averaging votes
       long_data <- long_data %>%
         group_by(get(year_col), partei) %>%
-        summarise(parl_sitze_partei = sum(parl_sitze_partei, na.rm = TRUE), .groups = 'drop')
-      
-      # Create line chart with custom colors
-      p <- plot_ly(
-        data = long_data,
-        x = ~`get(year_col)`,
-        y = ~parl_sitze_partei,
-        color = ~partei,
-        type = "scatter",
-        mode = "lines+markers",
-        text = ~paste(partei, ": ", parl_sitze_partei, " Sitze", sep=""),
-        hoverinfo = "text",
-        colors = party_colors,  # Use the same party_colors defined at the top
-        line = list(width = 2),
-        marker = list(size = 8)
-      ) %>%
-        layout(
-          title = title,
-          xaxis = list(
-            title = "Jahr",
-            tickmode = "linear",
-            dtick = 1
-          ),
-          yaxis = list(
-            title = "Anzahl Sitze",
-            rangemode = "tozero"
-          ),
-          showlegend = TRUE,
-          legend = list(
-            orientation = "h",
-            xanchor = "center",
-            x = 0.5,
-            y = -0.2
-          ),
-          hovermode = "closest"
+        summarise(
+          parl_sitze_partei = if(input$variables == "parlament_votes") {
+            mean(parl_sitze_partei, na.rm = TRUE)  # Average for vote shares
+          } else {
+            sum(parl_sitze_partei, na.rm = TRUE)   # Sum for seats
+          }, 
+          .groups = 'drop'
         )
+      
+      # Create plot based on variable type
+      if (input$variables == "parlament_sitze_anteil") {
+        # Create a copy of the data for display with rounded percentages
+        display_data <- long_data %>%
+          mutate(parl_sitze_partei = round(parl_sitze_partei, 1))
+        
+        # Stacked area chart for percentages
+        p <- plot_ly(
+          data = long_data,  # Use unrounded data for the actual plot
+          x = ~`get(year_col)`,
+          y = ~parl_sitze_partei,
+          color = ~partei,
+          type = "scatter",
+          mode = "none",
+          fill = "tonexty",
+          stackgroup = "one",
+          text = ~paste(partei, ": ", round(parl_sitze_partei, 1), "%", sep=""),  # Round only for display
+          hoverinfo = "text",
+          colors = party_colors,
+          line = list(width = 0.5)
+        ) %>%
+          layout(
+            title = title,
+            xaxis = list(
+              title = "Jahr",
+              tickmode = "linear",
+              dtick = 1
+            ),
+            yaxis = list(
+              title = "Anteil (%)",
+              rangemode = "tozero",
+              ticksuffix = "%"
+            ),
+            showlegend = TRUE,
+            legend = list(
+              orientation = "h",
+              xanchor = "center",
+              x = 0.5,
+              y = -0.2
+            ),
+            hovermode = "closest"
+          )
+      } else {
+        # Line chart for absolute numbers and vote shares
+        p <- plot_ly(
+          data = long_data,
+          x = ~`get(year_col)`,
+          y = ~parl_sitze_partei,
+          color = ~partei,
+          type = "scatter",
+          mode = "lines+markers",
+          text = ~paste(partei, ": ", 
+                       if(input$variables == "parlament_votes") {
+                         paste(round(parl_sitze_partei, 1), "%")
+                       } else {
+                         paste(parl_sitze_partei, " Sitze")
+                       }, 
+                       sep=""),
+          hoverinfo = "text",
+          colors = party_colors,
+          line = list(width = 2),
+          marker = list(size = 8)
+        ) %>%
+          layout(
+            title = title,
+            xaxis = list(
+              title = "Jahr",
+              tickmode = "linear",
+              dtick = 1
+            ),
+            yaxis = list(
+              title = if(input$variables == "parlament_votes") "Wähleranteil (%)" else "Anzahl Sitze",
+              rangemode = "tozero",
+              ticksuffix = if(input$variables == "parlament_votes") "%" else ""
+            ),
+            showlegend = TRUE,
+            legend = list(
+              orientation = "h",
+              xanchor = "center",
+              x = 0.5,
+              y = -0.2
+            ),
+            hovermode = "closest"
+          )
+      }
       
       p
     })
@@ -503,6 +667,84 @@ elections_server <- function(id, selected_data) {
       req(election_data())
       
       plot_data <- election_data()
+      
+      # Special handling for parliamentary elections
+      if (input$variables == "parl_election") {
+        # Get the list of all canton abbreviations for this year
+        all_cantons <- filtered_data() %>%
+          filter(!!sym(names(filtered_data())[grep("year|jahr", names(filtered_data()), ignore.case = TRUE)[1]]) == input$selected_year) %>%
+          pull(kantonnr) %>%
+          unique() %>%
+          sapply(get_canton_abbr)
+        
+        # Create a complete data frame with all cantons
+        all_canton_data <- data.frame(
+          canton_abbrev = all_cantons,
+          canton_name = sapply(all_cantons, function(abbr) get_canton_name(abbr, "de")),
+          parl_sitze_partei = 0  # Default value for cantons without elections
+        )
+        
+        # Update values for cantons with elections (those in plot_data)
+        cantons_with_elections <- plot_data %>%
+          filter(parl_sitze_partei == 1) %>%
+          pull(canton_abbrev)
+        
+        # Set the value to 1 for cantons with elections
+        all_canton_data$parl_sitze_partei[all_canton_data$canton_abbrev %in% cantons_with_elections] <- 1
+        
+        # Sort cantons alphabetically by abbreviation
+        canton_order <- sort(unique(all_canton_data$canton_abbrev))
+        all_canton_data$canton_abbrev <- factor(all_canton_data$canton_abbrev, levels = canton_order)
+        
+        # Create bar chart for all cantons, highlighting those with elections
+        p <- plot_ly(
+          data = all_canton_data,
+          x = ~canton_abbrev,
+          y = ~parl_sitze_partei,
+          type = "bar",
+          text = ~canton_name,  # Only show canton name in hover text
+          hoverinfo = "text",
+          marker = list(
+            color = ~ifelse(parl_sitze_partei == 1, "#4646B4", "#E0E0E0")  # Blue for elections, light gray for no elections
+          )
+        ) %>%
+          layout(
+            title = paste("Kantone mit Parlamentswahl im Jahr", input$selected_year),
+            xaxis = list(
+              title = "Kanton",
+              categoryorder = "array",
+              categoryarray = canton_order
+            ),
+            yaxis = list(
+              title = "Parlamentswahl",
+              range = c(0, 1),
+              showticklabels = FALSE
+            ),
+            showlegend = FALSE,
+            margin = list(b = 50)
+          )
+        
+        # Add "Ja" text annotations only for cantons with elections
+        election_cantons <- all_canton_data %>% 
+          filter(parl_sitze_partei == 1) %>%
+          pull(canton_abbrev)
+        
+        if(length(election_cantons) > 0) {
+          annotations <- lapply(election_cantons, function(abb) {
+            list(
+              x = abb,       # Use the canton abbreviation directly as x-coordinate
+              y = 0.5,       # Position the text in the middle of the bar
+              text = "Ja",
+              showarrow = FALSE,
+              font = list(color = "white", size = 12)
+            )
+          })
+          
+          p <- p %>% layout(annotations = annotations)
+        }
+        
+        return(p)
+      }
       
       # Sort cantons alphabetically by abbreviation
       canton_order <- sort(unique(plot_data$canton_abbrev))
@@ -514,14 +756,25 @@ elections_server <- function(id, selected_data) {
         y = ~parl_sitze_partei,
         color = ~partei,
         type = "bar",
-        text = ~paste(canton_name, "<br>", partei, ": ", parl_sitze_partei, " Sitze", sep=""),
+        text = ~paste(canton_name, "<br>", partei, ": ", 
+                     if(input$variables == "parlament_votes") {
+                       paste(round(parl_sitze_partei, 1), "%")
+                     } else if(input$variables == "parlament_sitze_anteil") {
+                       paste(round(parl_sitze_partei, 1), "%")
+                     } else {
+                       paste(parl_sitze_partei, " Sitze")
+                     }, 
+                     sep=""),
         textposition = "none",  # Remove text labels
         hoverinfo = "text",
         colors = party_colors
       ) %>%
         layout(
           title = paste(
-            if(input$variables == "parlament_sitze") "Anzahl Parlamentssitze" else "Anzahl Regierungsratssitze",
+            if(input$variables == "parlament_sitze") "Anzahl Parlamentssitze" 
+            else if(input$variables == "parlament_sitze_anteil") "Anteil Parlamentssitze"
+            else if(input$variables == "parlament_votes") "Wähleranteil"
+            else "Anzahl Regierungsratssitze",
             "der Parteien nach Kanton im Jahr", 
             input$selected_year
           ),
@@ -531,8 +784,9 @@ elections_server <- function(id, selected_data) {
             categoryarray = canton_order
           ),
           yaxis = list(
-            title = "Anzahl Sitze",
-            rangemode = "tozero"
+            title = if(input$variables %in% c("parlament_sitze_anteil", "parlament_votes")) "Anteil (%)" else "Anzahl Sitze",
+            rangemode = "tozero",
+            ticksuffix = if(input$variables %in% c("parlament_sitze_anteil", "parlament_votes")) "%" else ""
           ),
           barmode = "stack",
           showlegend = TRUE,
