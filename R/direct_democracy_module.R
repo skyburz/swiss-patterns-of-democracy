@@ -107,7 +107,7 @@ direct_democracy_ui <- function(id) {
                 
                 # Single year slider for Kantonsvergleich tab
                 conditionalPanel(
-                  condition = paste0("input['", ns("main_tabs"), "'] == 'Kantonsvergleich' || input['", ns("main_tabs"), "'] == 'Institutionsdetails'"),
+                  condition = paste0("input['", ns("main_tabs"), "'] == 'Kantonsvergleich'"),
                   sliderInput(
                     ns("selected_year"),
                     "Jahr auswählen:",
@@ -214,40 +214,74 @@ direct_democracy_ui <- function(id) {
 direct_democracy_server <- function(id, full_dataset) {
   moduleServer(id, function(input, output, session) {
     
+    # Variable mapping for labels and descriptions
+    variable_labels <- reactiveVal(list(
+      "abst_total" = "Jährliche Anzahl Abstimmungen",
+      "init_total" = "Jährliche Anzahl Abstimmungen über Volksinitiativen",
+      "ref_total" = "Jährliche Anzahl Abstimmungen über Referenden",
+      "turnout_v" = "Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent",
+      "ddr_snddi" = "Sub-National Direct Democracy Index",
+      "obl_finref" = "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
+      "fak_finref" = "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
+      # Add new variables with their labels
+      "ddr_stutz" = "Direktdemokratische Rechte (Index)",
+      "gir" = "Gesetzesinitiativrecht (Index)",
+      "vir" = "Verfassungsinitiativrecht (Index)",
+      "grr" = "Gesetzesreferendumsrecht (Index)",
+      "frr" = "Finanzreferendumsrecht (Index)"
+    ))
+    
+    # List of variables that need decimal formatting (continuous variables)
+    continuous_vars <- c("turnout_v", "ddr_snddi", "ddr_stutz", "gir", "vir", "grr", "frr")
+    decimal_places <- list(
+      "turnout_v" = 1, 
+      "ddr_snddi" = 2,
+      "ddr_stutz" = 2,
+      "gir" = 2,
+      "vir" = 2,
+      "grr" = 2,
+      "frr" = 2
+    )
+    
+    # List of index variables that have limited availability
+    index_vars <- c("ddr_snddi", "ddr_stutz", "gir", "vir", "grr", "frr")
+    
+    # List of index variables that should default to 2018 for Kantonsvergleich
+    index_vars_2018 <- c("ddr_stutz", "gir", "vir", "grr", "frr")
+    
+    # Function to get variable label
+    get_var_label <- function(var_name) {
+      labels <- variable_labels()
+      if (var_name %in% names(labels)) {
+        return(labels[[var_name]])
+      }
+      return(var_name)
+    }
+    
+    # Helper function to get decimal places for a variable
+    get_decimal_places <- function(var_name) {
+      if (var_name %in% names(decimal_places)) {
+        return(decimal_places[[var_name]])
+      }
+      return(2)  # Default to 2 decimal places
+    }
+    
     # Create a cleaned dataset function
     cleaned_data <- reactive({
       data <- full_dataset()
       
-      # Clean turnout_v - replace dots and empty strings with NA
-      if ("turnout_v" %in% names(data)) {
-        data <- data %>%
-          mutate(turnout_v = ifelse(turnout_v == "." | turnout_v == "" | is.na(turnout_v), 
-                                   NA_real_, 
-                                   as.numeric(as.character(turnout_v))))
-      }
+      # Variables that need numeric conversion and NA handling
+      numeric_vars <- c("turnout_v", "ddr_snddi", "obl_finref", "fak_finref", 
+                       "ddr_stutz", "gir", "vir", "grr", "frr")
       
-      # Clean ddr_snddi - replace dots and empty strings with NA
-      if ("ddr_snddi" %in% names(data)) {
-        data <- data %>%
-          mutate(ddr_snddi = ifelse(ddr_snddi == "." | ddr_snddi == "" | is.na(ddr_snddi), 
-                                  NA_real_, 
-                                  as.numeric(as.character(ddr_snddi))))
-      }
-      
-      # Clean obl_finref - replace dots and empty strings with NA
-      if ("obl_finref" %in% names(data)) {
-        data <- data %>%
-          mutate(obl_finref = ifelse(obl_finref == "." | obl_finref == "" | is.na(obl_finref), 
-                                    NA_real_, 
-                                    as.numeric(as.character(obl_finref))))
-      }
-      
-      # Clean fak_finref - replace dots and empty strings with NA
-      if ("fak_finref" %in% names(data)) {
-        data <- data %>%
-          mutate(fak_finref = ifelse(fak_finref == "." | fak_finref == "" | is.na(fak_finref), 
-                                    NA_real_, 
-                                    as.numeric(as.character(fak_finref))))
+      # Clean all variables in one pass
+      for (var in numeric_vars) {
+        if (var %in% names(data)) {
+          data <- data %>%
+            mutate(!!sym(var) := ifelse(!!sym(var) == "." | !!sym(var) == "" | is.na(!!sym(var)), 
+                                       NA_real_, 
+                                       as.numeric(as.character(!!sym(var)))))
+        }
       }
       
       return(data)
@@ -257,38 +291,13 @@ direct_democracy_server <- function(id, full_dataset) {
     filtered_data <- reactive({
       # Get the cleaned dataset
       data <- cleaned_data()
+      req(input$variables)
       
-      # Special handling for ddr_snddi: restrict time period to 2015-2023
-      if (input$variables == "ddr_snddi") {
-        # First check if we need to set the initial slider values (already handled in the observers)
-        
-        if (input$main_tabs == "Zeittrend") {
-          # For Zeittrend tab, use the time range slider values but ensure within 2015-2023
-          min_year <- max(2015, input$time_range[1])
-          max_year <- min(2023, input$time_range[2])
-          data <- data %>% filter(jahr >= min_year & jahr <= max_year)
-        } else if (input$main_tabs == "Kantonsvergleich" || input$main_tabs == "Institutionsdetails") {
-          # For Kantonsvergleich tab, restrict selected_year to 2015-2023
-          if (input$selected_year < 2015 || input$selected_year > 2023) {
-            # If outside valid range, default to 2023
-            selected_year <- 2023
-          } else {
-            selected_year <- input$selected_year
-          }
-          data <- data %>% filter(jahr == selected_year)
-        }
-      } else {
-        # For non-ddr_snddi variables, use normal filtering
-        
-        # Apply time filters based on active tab
-        if (input$main_tabs == "Zeittrend" && !is.null(input$time_range)) {
-          # For Zeittrend tab, use the time range slider
-          data <- data %>% filter(jahr >= input$time_range[1] & jahr <= input$time_range[2])
-        } else if (!is.null(input$selected_year) && 
-                  (input$main_tabs == "Kantonsvergleich" || input$main_tabs == "Institutionsdetails")) {
-          # For Kantonsvergleich and Institutionsdetails tabs, use the single year slider
-          data <- data %>% filter(jahr == input$selected_year)
-        }
+      # Apply time filters based on active tab
+      if (input$main_tabs == "Zeittrend" && !is.null(input$time_range)) {
+        data <- data %>% filter(jahr >= input$time_range[1] & jahr <= input$time_range[2])
+      } else if (input$main_tabs == "Kantonsvergleich" && !is.null(input$selected_year)) {
+        data <- data %>% filter(jahr == input$selected_year)
       }
       
       # Filter by canton
@@ -303,64 +312,42 @@ direct_democracy_server <- function(id, full_dataset) {
     observe({
       data <- cleaned_data()
       
-      # Find potential direct democracy columns
-      direct_democracy_cols <- c(
-        # First check if abst_total, init_total, ref_total, turnout_v, and ddr_snddi exist in the dataset
-        if("abst_total" %in% names(data)) "abst_total" else NULL,
-        if("init_total" %in% names(data)) "init_total" else NULL,
-        if("ref_total" %in% names(data)) "ref_total" else NULL,
-        if("turnout_v" %in% names(data)) "turnout_v" else NULL,
-        if("ddr_snddi" %in% names(data)) "ddr_snddi" else NULL,
-        if("obl_finref" %in% names(data)) "obl_finref" else NULL,
-        if("fak_finref" %in% names(data)) "fak_finref" else NULL,
-        # Then get other direct democracy variables
-        names(data)[grep("abstimmung|referendum|initiative|volksabstimmung|volksinitiative",
-                         names(data), ignore.case = TRUE)]
-      )
+      # Define potential direct democracy columns
+      key_vars <- c("abst_total", "init_total", "ref_total", "turnout_v", 
+                   "ddr_snddi", "obl_finref", "fak_finref",
+                   "ddr_stutz", "gir", "vir", "grr", "frr")
       
-      # Remove any NULL values and make sure the list is unique
-      direct_democracy_cols <- unique(direct_democracy_cols[!is.null(direct_democracy_cols)])
+      # Filter to variables that exist in the dataset
+      existing_vars <- key_vars[key_vars %in% names(data)]
       
-      # Create named choices for better display
+      # Add any other variables that might be relevant
+      pattern_vars <- names(data)[grep("abstimmung|referendum|initiative|volksabstimmung|volksinitiative",
+                                     names(data), ignore.case = TRUE)]
+      
+      # Combine and remove duplicates
+      direct_democracy_cols <- unique(c(existing_vars, pattern_vars))
+      
+      # Create named choices using the variable labels
       named_choices <- setNames(
         direct_democracy_cols,
-        ifelse(
-          direct_democracy_cols == "abst_total",
-          "Jährliche Anzahl Abstimmungen",
-          ifelse(
-            direct_democracy_cols == "init_total",
-            "Jährliche Anzahl Abstimmungen über Volksinitiativen",
-            ifelse(
-              direct_democracy_cols == "ref_total",
-              "Jährliche Anzahl Abstimmungen über Referenden",
-              ifelse(
-                direct_democracy_cols == "turnout_v",
-                "Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent",
-                ifelse(
-                  direct_democracy_cols == "ddr_snddi",
-                  "Sub-National Direct Democracy Index",
-                  ifelse(
-                    direct_democracy_cols == "obl_finref",
-                    "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
-                    ifelse(
-                      direct_democracy_cols == "fak_finref",
-                      "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
-                  direct_democracy_cols
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
+        sapply(direct_democracy_cols, get_var_label)
       )
+      
+      # Update the variable labels with any new variables found
+      current_labels <- variable_labels()
+      for (var in direct_democracy_cols) {
+        if (!var %in% names(current_labels)) {
+          current_labels[[var]] <- var  # Default to the variable name itself
+        }
+      }
+      variable_labels(current_labels)
       
       # Set the choices
       updateSelectInput(
         session,
         "variables",
         choices = named_choices,
-        selected = ifelse("abst_total" %in% direct_democracy_cols, "abst_total", direct_democracy_cols[1])
+        selected = if ("abst_total" %in% direct_democracy_cols) "abst_total" else direct_democracy_cols[1]
       )
       
       # Get unique cantons
@@ -373,132 +360,84 @@ direct_democracy_server <- function(id, full_dataset) {
         choices = cantons,
         selected = cantons[1:3]  # Select first three by default
       )
+      
+      # Get min and max years to set slider ranges
+      years <- sort(unique(data$jahr))
+      min_year <- min(years)
+      max_year <- max(years)
+      
+      # Set the time range sliders
+      updateSliderInput(
+        session, 
+        "time_range", 
+        min = min_year,
+        max = max_year,
+        value = c(min_year, max_year)
+      )
+      
+      # Default to maximum year for most variables
+      updateSliderInput(
+        session,
+        "selected_year",
+        min = min_year,
+        max = max_year,
+        value = max_year
+      )
     })
     
-    # Update time range sliders based on data
-    observe({
+    # Observer for updating year slider when variable changes
+    observeEvent(input$variables, {
+      req(input$main_tabs == "Kantonsvergleich")
+      
+      selected_var <- input$variables
       data <- cleaned_data()
-      
-      # Get min and max years
       years <- sort(unique(data$jahr))
+      min_year <- min(years)
+      max_year <- max(years)
       
-      # Different behavior based on the selected variable
-      if (input$variables == "ddr_snddi") {
-        # For ddr_snddi, restrict time range slider to 2015-2023
-        if (!isTRUE(session$userData$.ddr_snddi_time_restricted)) {
-          # Update the time range slider with restricted range
-          updateSliderInput(
-            session, 
-            "time_range", 
-            min = 2015,
-            max = 2023,
-            value = c(2015, 2023)
-          )
-          
-          # Update the single year slider for Kantonsvergleich tab
+      # Set default year to 2018 for specific index variables, otherwise use max year
+      if (selected_var %in% index_vars_2018) {
+        if (2018 %in% years) {
           updateSliderInput(
             session,
             "selected_year",
-            min = 2015,
-            max = 2023,
-            value = 2023
+            value = 2018
           )
-          
-          # Set a flag to prevent infinite loop
-          session$userData$.ddr_snddi_time_restricted <- TRUE
         }
       } else {
-        # If we just switched away from ddr_snddi to another variable,
-        # Reset the time sliders to full dataset range
-        if (isTRUE(session$userData$.ddr_snddi_time_restricted)) {
-          # Reset the time range slider to full range
-          updateSliderInput(
-            session, 
-            "time_range", 
-            min = min(years),
-            max = max(years),
-            value = c(min(years), max(years))
-          )
-          
-          # Reset the single year slider for Kantonsvergleich
-          updateSliderInput(
-            session,
-            "selected_year",
-            min = min(years),
-            max = max(years),
-            value = max(years)
-          )
-          
-          # Reset the flag
-          session$userData$.ddr_snddi_time_restricted <- FALSE
-        }
-      }
-    })
-    
-    # Force re-rendering of plots when time range or selected_year changes for ddr_snddi
-    observeEvent(input$time_range, {
-      if (input$variables == "ddr_snddi") {
-        # Invalidate the filtered data to force a redraw
-        invalidateLater(100)
-      }
-    })
-    
-    observeEvent(input$selected_year, {
-      if (input$variables == "ddr_snddi") {
-        # Invalidate the filtered data to force a redraw
-        invalidateLater(100)
-      }
-    })
-    
-    # Observe changes to the variables input to update the time sliders accordingly
-    observeEvent(input$variables, {
-      # If ddr_snddi is selected, restrict time sliders
-      if (input$variables == "ddr_snddi") {
-        # Update the time range slider for Zeittrend
-        updateSliderInput(
-          session, 
-          "time_range", 
-          min = 2015,
-          max = 2023,
-          value = c(2015, 2023)
-        )
-        
-        # Update the selected_year slider for Kantonsvergleich
         updateSliderInput(
           session,
           "selected_year",
-          min = 2015,
-          max = 2023,
-          value = 2023
+          value = max_year
         )
+      }
+    })
+    
+    # Observer for when the tab changes to Kantonsvergleich
+    observeEvent(input$main_tabs, {
+      if (input$main_tabs == "Kantonsvergleich") {
+        req(input$variables)
+        selected_var <- input$variables
+        data <- cleaned_data()
+        years <- sort(unique(data$jahr))
+        min_year <- min(years)
+        max_year <- max(years)
         
-        # Set the flag
-        session$userData$.ddr_snddi_time_restricted <- TRUE
-      } else {
-        # For other variables, use the full range of years
-        if (isTRUE(session$userData$.ddr_snddi_time_restricted)) {
-          # Get full date range
-          years <- sort(unique(cleaned_data()$jahr))
-          
-          # Reset the time sliders to full range
-          updateSliderInput(
-            session, 
-            "time_range", 
-            min = min(years),
-            max = max(years),
-            value = c(min(years), max(years))
-          )
-          
+        # Set default year to 2018 for specific index variables, otherwise use max year
+        if (selected_var %in% index_vars_2018) {
+          if (2018 %in% years) {
+            updateSliderInput(
+              session,
+              "selected_year",
+              value = 2018
+            )
+          }
+        } else {
           updateSliderInput(
             session,
             "selected_year",
-            min = min(years),
-            max = max(years),
-            value = max(years)
+            value = max_year
           )
-          
-          # Reset the flag
-          session$userData$.ddr_snddi_time_restricted <- FALSE
         }
       }
     })
@@ -511,10 +450,12 @@ direct_democracy_server <- function(id, full_dataset) {
       
       # Get the selected variable
       selected_var <- input$variables
+      var_label <- get_var_label(selected_var)
+      is_continuous <- selected_var %in% continuous_vars
+      is_index <- selected_var %in% index_vars
       
       # Check if there are valid data points to plot
       if (all(is.na(data[[selected_var]]))) {
-        # Return an empty plot with a message if all values are NA
         return(plot_ly() %>% 
                  layout(title = "Keine Daten verfügbar für diese Variable",
                         xaxis = list(title = ""),
@@ -527,12 +468,9 @@ direct_democracy_server <- function(id, full_dataset) {
         yearly_data <- data %>%
           group_by(jahr) %>%
           summarise(
-            value = if(selected_var %in% c("turnout_v", "ddr_snddi")) {
-              # For continuous variables, calculate average and also track how many values contributed
-              avg_val <- mean(!!sym(selected_var), na.rm = TRUE)
-              n_vals <- sum(!is.na(!!sym(selected_var)))
-              n_total <- n()
-              avg_val  # Return the average as the value
+            value = if (is_continuous) {
+              # For continuous variables, calculate average and track how many values contributed
+              mean(!!sym(selected_var), na.rm = TRUE)
             } else {
               sum(!!sym(selected_var), na.rm = TRUE)
             },
@@ -540,16 +478,24 @@ direct_democracy_server <- function(id, full_dataset) {
             n_total = n()
           )
         
-        # For continuous variables, add information about how many cantons contributed to each year's average
-        if(selected_var %in% c("turnout_v", "ddr_snddi")) {
+        # Create hover text
+        if (is_continuous) {
           yearly_data <- yearly_data %>%
             mutate(
-              # Ensure value is numeric
               value = as.numeric(value),
               hover_text = paste0(
                 "Jahr: ", jahr, "<br>",
-                "Durchschnittlicher Wert: ", round(as.numeric(value), 2), 
+                "Durchschnittlicher Wert: ", round(value, get_decimal_places(selected_var)), 
                 if(selected_var == "turnout_v") "%" else "", "<br>",
+                "Datengrundlage: ", n_vals, " von ", n_total, " Kantonen"
+              )
+            )
+        } else {
+          yearly_data <- yearly_data %>%
+            mutate(
+              hover_text = paste0(
+                "Jahr: ", jahr, "<br>",
+                "Gesamtwert: ", value, "<br>",
                 "Datengrundlage: ", n_vals, " von ", n_total, " Kantonen"
               )
             )
@@ -563,258 +509,131 @@ direct_democracy_server <- function(id, full_dataset) {
                           yaxis = list(title = "")))
         }
         
-        # Create the plot as plotly directly for continuous variables
-        if(selected_var %in% c("turnout_v", "ddr_snddi")) {
-          title_text <- if(selected_var == "turnout_v") {
-            "Zeittrend der durchschnittlichen Stimmbeteiligung bei kantonalen Volksabstimmungen"
-          } else if(selected_var == "ddr_snddi") {
-            "Zeittrend des durchschnittlichen Sub-National Direct Democracy Index"
-          }
-          
-          y_title <- if(selected_var == "turnout_v") {
-            "Stimmbeteiligung in Prozent"
-          } else if(selected_var == "ddr_snddi") {
-            "Direct Democracy Index Wert"
-          }
-          
-          decimal_places <- if(selected_var == "turnout_v") ".1f" else ".2f"
-          
-          p <- plot_ly(
-            data = yearly_data,
-            x = ~jahr,
-            y = ~as.numeric(value),
-            type = 'scatter',
-            mode = 'lines+markers',
-            line = list(color = '#2b6cb0', width = 2),
-            marker = list(color = '#2b6cb0', size = 8),
-            hoverinfo = 'text',
-            text = ~hover_text
-          ) %>%
-          layout(
-            title = title_text,
-            xaxis = list(title = "Jahr"),
-            yaxis = list(
-              title = y_title,
-              tickformat = decimal_places
+        # Create plotly plot
+        p <- plot_ly(
+          data = yearly_data,
+          x = ~jahr,
+          y = ~value,
+          type = 'scatter',
+          mode = 'lines+markers',
+          line = list(color = '#2b6cb0', width = 2),
+          marker = list(color = '#2b6cb0', size = 8),
+          hoverinfo = 'text',
+          text = ~hover_text
+        ) %>%
+        layout(
+          title = paste0("Zeittrend ", if(is_continuous) "des durchschnittlichen " else "der ", var_label),
+          xaxis = list(
+            title = "Jahr",
+            dtick = 1,
+            tickmode = "linear",
+            tickformat = "d"
+          ),
+          yaxis = list(
+            title = var_label,
+            tickformat = if(is_continuous) paste0(".", get_decimal_places(selected_var), "f") else ""
+          )
+        )
+        
+        # Add information about data availability for index variables
+        if (is_index) {
+          # Add a note about limited data availability
+          p <- p %>% layout(
+            annotations = list(
+              x = 0.5,
+              y = 1.05,
+              text = "Hinweis: Für einige Jahre könnten Daten fehlen",
+              showarrow = FALSE,
+              xref = "paper",
+              yref = "paper",
+              font = list(size = 12)
             )
           )
-          
-          # Add a subtitle with time period information for ddr_snddi
-          if(selected_var == "ddr_snddi") {
-            p <- p %>% layout(
-              annotations = list(
-                x = 0.5,
-                y = 1.05,
-                text = "Verfügbar nur für 2015-2023",
-                showarrow = FALSE,
-                xref = "paper",
-                yref = "paper",
-                font = list(size = 12)
-              )
-            )
-          }
-          
-          return(p)
-        } else {
-          # Create the standard ggplot for non-continuous variables
-          p <- ggplot(yearly_data, aes(x = jahr, y = value)) +
-            geom_line(color = "#2b6cb0", size = 1) +
-            geom_point(color = "#2b6cb0", size = 3) +
-            labs(
-              title = paste("Zeittrend", 
-                          ifelse(selected_var == "abst_total", 
-                                "der Gesamtzahl Abstimmungen",
-                                ifelse(selected_var == "init_total",
-                                      "der Gesamtzahl Abstimmungen über Volksinitiativen",
-                                      ifelse(selected_var == "ref_total",
-                                            "der Gesamtzahl Abstimmungen über Referenden",
-                                            ifelse(selected_var == "obl_finref",
-                                                  "der Gesamtzahl Abstimmungen über obligatorische Finanzreferenden",
-                                                  ifelse(selected_var == "fak_finref",
-                                                        "der Gesamtzahl Abstimmungen über fakultative Finanzreferenden",
-                                                        selected_var)))))),
-              x = "Jahr",
-              y = ifelse(selected_var == "abst_total", 
-                        "Gesamtzahl Abstimmungen",
-                        ifelse(selected_var == "init_total",
-                              "Jährliche Anzahl Abstimmungen über Volksinitiativen",
-                              ifelse(selected_var == "ref_total",
-                                    "Jährliche Anzahl Abstimmungen über Referenden",
-                                    ifelse(selected_var == "obl_finref",
-                                          "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden",
-                                          ifelse(selected_var == "fak_finref",
-                                                "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden",
-                                                selected_var)))))
-            )
-        }
-      } else {
-        # For "Auswahl von Kantonen", first check if specific cantons have all NA values
-        # and remove those cantons from the dataset
-        if (anyNA(data[[selected_var]])) {
-          # Identify which cantons have only NA values for the selected variable
-          na_cantons <- data %>% 
-            group_by(kanton) %>% 
-            summarize(all_na = all(is.na(!!sym(selected_var)))) %>%
-            filter(all_na) %>% 
-            pull(kanton)
-          
-          # Print message about which cantons are being excluded
-          if (length(na_cantons) > 0) {
-            message(paste("Excluding cantons with all NA values:", paste(na_cantons, collapse=", ")))
-          }
-          
-          # Filter out cantons with all NA values and remove remaining NA values
-          data <- data %>% 
-            filter(!kanton %in% na_cantons) %>%
-            filter(!is.na(!!sym(selected_var)))
         }
         
-        # Check if there are any rows left after filtering
-        if (nrow(data) == 0) {
+        return(p)
+      } else {
+        # For "Auswahl von Kantonen"
+        # Filter out NA values before plotting
+        plot_data <- data %>% 
+          filter(!is.na(!!sym(selected_var))) %>%
+          mutate(!!sym(selected_var) := as.numeric(!!sym(selected_var)))
+        
+        # Check if we have data to plot
+        if(nrow(plot_data) == 0) {
           return(plot_ly() %>% 
                    layout(title = "Keine Daten verfügbar für diese Kombination von Filtern",
                           xaxis = list(title = ""),
                           yaxis = list(title = "")))
         }
         
-        # For turnout_v and ddr_snddi, create a plotly plot with hover info for missing data context
-        if(selected_var %in% c("turnout_v", "ddr_snddi")) {
-          # Filter out NA values before plotting
-          plot_data <- data %>% 
-            filter(!is.na(!!sym(selected_var))) %>%
-            # Ensure numeric conversion
-            mutate(!!sym(selected_var) := as.numeric(!!sym(selected_var)))
-          
-          # Check if we have data to plot
-          if(nrow(plot_data) == 0) {
-            return(plot_ly() %>% 
-                     layout(title = "Keine Daten verfügbar für diese Kombination von Filtern",
-                            xaxis = list(title = ""),
-                            yaxis = list(title = "")))
-          }
-          
-          # Count total number of cantons and years
-          total_cantons <- length(unique(data$kanton))
-          total_years <- length(unique(data$jahr))
-          total_possible <- total_cantons * total_years
-          
-          # Count number of non-NA values
-          total_available <- sum(!is.na(data[[selected_var]]))
-          
-          # Calculate percentage of data available
-          data_completeness <- round(100 * total_available / total_possible, 1)
-          
-          # Set appropriate titles and formatting based on variable
-          var_title <- if(selected_var == "turnout_v") {
-            "Stimmbeteiligung bei kantonalen Volksabstimmungen"
-          } else if(selected_var == "ddr_snddi") {
-            "Sub-National Direct Democracy Index"
-          }
-          
-          y_title <- if(selected_var == "turnout_v") {
-            "Stimmbeteiligung in Prozent"
-          } else if(selected_var == "ddr_snddi") {
-            "Direct Democracy Index Wert"
-          }
-          
-          decimal_places <- if(selected_var == "turnout_v") ".1f" else ".2f"
-          value_suffix <- if(selected_var == "turnout_v") "%" else ""
-          
-          p <- plot_ly(
-            data = plot_data,
-            x = ~jahr,
-            y = ~as.numeric(get(selected_var)),
-            color = ~kanton,
-            type = 'scatter',
-            mode = 'lines+markers',
-            hoverinfo = 'text',
-            text = ~paste0(
-              "Kanton: ", kanton, "<br>",
-              "Jahr: ", jahr, "<br>",
-              var_title, ": ", round(as.numeric(get(selected_var)), if(selected_var == "ddr_snddi") 2 else 1), 
-              value_suffix
-            )
-          ) %>%
+        # Data availability stats
+        total_cantons <- length(unique(data$kanton))
+        total_years <- length(unique(data$jahr))
+        total_possible <- total_cantons * total_years
+        total_available <- sum(!is.na(data[[selected_var]]))
+        data_completeness <- round(100 * total_available / total_possible, 1)
+        
+        # Create plotly plot
+        p <- plot_ly() %>%
           layout(
             title = paste0(
-              "Zeittrend ", var_title, "<br>",
+              "Zeittrend ", var_label, "<br>",
               "<sup>Datenverfügbarkeit: ", data_completeness, "% aller möglichen Datenpunkte</sup>"
             ),
-            xaxis = list(title = "Jahr"),
+            xaxis = list(
+              title = "Jahr",
+              dtick = 1,
+              tickmode = "linear",
+              tickformat = "d"
+            ),
             yaxis = list(
-              title = y_title,
-              tickformat = decimal_places
+              title = var_label,
+              tickformat = if(is_continuous) paste0(".", get_decimal_places(selected_var), "f") else ""
             ),
             legend = list(title = list(text = "Kanton"))
           )
+        
+        # Add a trace for each canton
+        for (canton in unique(plot_data$kanton)) {
+          canton_data <- plot_data %>% filter(kanton == canton)
           
-          # Add time period subtitle for ddr_snddi
-          if(selected_var == "ddr_snddi") {
-            p <- p %>% layout(
-              annotations = list(
-                x = 0.5,
-                y = 1.05,
-                text = "Verfügbar nur für 2015-2023",
-                showarrow = FALSE,
-                xref = "paper",
-                yref = "paper",
-                font = list(size = 12)
-              )
+          # Add trace for this canton
+          p <- p %>% add_trace(
+            data = canton_data,
+            x = ~jahr,
+            y = ~get(selected_var),
+            name = canton,
+            type = "scatter",
+            mode = "lines+markers",
+            hoverinfo = "text",
+            text = ~paste(
+              canton, "<br>Jahr:", jahr, 
+              "<br>", var_label, ":", 
+              if(is_continuous) round(get(selected_var), get_decimal_places(selected_var)) else get(selected_var),
+              if(selected_var == "turnout_v") "%" else ""
             )
-          }
-          
-          return(p)
-        } else {
-          # For non-continuous variables, use the standard ggplot
-          p <- ggplot(data, aes(x = jahr, y = !!sym(selected_var), color = kanton)) +
-            geom_line(size = 1) +
-            geom_point(size = 2) +
-            labs(
-              title = paste("Zeittrend", 
-                          ifelse(selected_var == "abst_total", 
-                                "der Gesamtzahl Abstimmungen",
-                                ifelse(selected_var == "init_total",
-                                      "der Gesamtzahl Abstimmungen über Volksinitiativen",
-                                      ifelse(selected_var == "ref_total",
-                                            "der Gesamtzahl Abstimmungen über Referenden",
-                                            ifelse(selected_var == "obl_finref",
-                                                  "der Gesamtzahl Abstimmungen über obligatorische Finanzreferenden",
-                                                  ifelse(selected_var == "fak_finref",
-                                                        "der Gesamtzahl Abstimmungen über fakultative Finanzreferenden",
-                                                        selected_var)))))),
-              x = "Jahr",
-              y = ifelse(selected_var == "abst_total", 
-                        "Gesamtzahl Abstimmungen",
-                        ifelse(selected_var == "init_total",
-                              "Jährliche Anzahl Abstimmungen über Volksinitiativen",
-                              ifelse(selected_var == "ref_total",
-                                    "Jährliche Anzahl Abstimmungen über Referenden",
-                                    ifelse(selected_var == "obl_finref",
-                                          "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden",
-                                          ifelse(selected_var == "fak_finref",
-                                                "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden",
-                                                selected_var)))))
-            )
-        }
-      }
-      
-      # Apply common ggplot theme for non-plotly plots
-      if (!exists("p") || !inherits(p, "plotly")) {
-        p <- p +
-          theme_minimal() +
-          theme(
-            plot.title = element_text(size = 16, face = "bold"),
-            axis.title = element_text(size = 12),
-            axis.text = element_text(size = 10)
           )
+        }
+        
+        # Add information about data availability for index variables
+        if (is_index) {
+          # Add a note about limited data availability
+          p <- p %>% layout(
+            annotations = list(
+              x = 0.5,
+              y = 1.05,
+              text = "Hinweis: Für einige Jahre könnten Daten fehlen",
+              showarrow = FALSE,
+              xref = "paper",
+              yref = "paper",
+              font = list(size = 12)
+            )
+          )
+        }
+        
+        return(p)
       }
-      
-      # Convert ggplot to plotly if it's not already a plotly object
-      if (!inherits(p, "plotly")) {
-        p <- ggplotly(p, tooltip = "text")
-      }
-      
-      return(p)
     })
     
     # Canton comparison plot
@@ -824,17 +643,19 @@ direct_democracy_server <- function(id, full_dataset) {
       
       # Get the selected variable
       selected_var <- input$variables
+      var_label <- get_var_label(selected_var)
+      is_continuous <- selected_var %in% continuous_vars
+      is_index <- selected_var %in% index_vars
       
-      # Check if there are valid data points to plot
+      # Check for valid data points
       if (all(is.na(data[[selected_var]]))) {
-        # Return an empty plot with a message if all values are NA
         return(plot_ly() %>% 
                  layout(title = "Keine Daten verfügbar für diese Variable",
                         xaxis = list(title = ""),
                         yaxis = list(title = "")))
       }
       
-      # Filter out cantons that have all NA values for this variable
+      # Filter out cantons that have all NA values
       valid_cantons <- data %>%
         group_by(kanton) %>%
         summarise(has_valid = !all(is.na(!!sym(selected_var)))) %>%
@@ -849,11 +670,11 @@ direct_democracy_server <- function(id, full_dataset) {
         group_by(kanton) %>%
         summarise(avg_value = mean(!!sym(selected_var), na.rm = TRUE))
       
-      # Remove any NaN or Inf values that might have been created
+      # Remove any NaN or Inf values
       canton_avg <- canton_avg %>%
         filter(!is.nan(avg_value) & !is.infinite(avg_value))
       
-      # Check if there are any rows left after filtering
+      # Check if there are any rows left
       if (nrow(canton_avg) == 0) {
         return(plot_ly() %>% 
                  layout(title = "Keine Daten verfügbar für diese Kombination von Filtern",
@@ -861,48 +682,14 @@ direct_democracy_server <- function(id, full_dataset) {
                         yaxis = list(title = "")))
       }
       
-      # Get title and y-axis label based on variable
-      title_text <- paste("Kantonsvergleich der", 
-                        ifelse(selected_var == "abst_total", 
-                              "Anzahl Abstimmungen",
-                              ifelse(selected_var == "init_total",
-                                    "Anzahl Abstimmungen über Volksinitiativen",
-                                    ifelse(selected_var == "ref_total",
-                                          "Anzahl Abstimmungen über Referenden",
-                                          ifelse(selected_var == "turnout_v",
-                                                "Stimmbeteiligung bei kantonalen Volksabstimmungen",
-                                                ifelse(selected_var == "ddr_snddi",
-                                                      "Sub-National Direct Democracy Index Werte",
-                                                      ifelse(selected_var == "obl_finref",
-                                                            "Anzahl Abstimmungen über obligatorische Finanzreferenden",
-                                                            ifelse(selected_var == "fak_finref",
-                                                                  "Anzahl Abstimmungen über fakultative Finanzreferenden",
-                                                                  selected_var))))))))
-      
-      y_title <- ifelse(selected_var == "abst_total", 
-                      "Anzahl Abstimmungen",
-                      ifelse(selected_var == "init_total",
-                            "Anzahl Abstimmungen über Volksinitiativen",
-                            ifelse(selected_var == "ref_total",
-                                  "Anzahl Abstimmungen über Referenden",
-                                  ifelse(selected_var == "turnout_v",
-                                        "Stimmbeteiligung in Prozent",
-                                        ifelse(selected_var == "ddr_snddi",
-                                              "Direct Democracy Index Wert",
-                                              ifelse(selected_var == "obl_finref",
-                                                    "Anzahl Abstimmungen über obligatorische Finanzreferenden",
-                                                    ifelse(selected_var == "fak_finref",
-                                                          "Anzahl Abstimmungen über fakultative Finanzreferenden",
-                                                          selected_var)))))))
-      
       # Create the plot
       p <- ggplot(canton_avg, aes(x = reorder(kanton, avg_value), y = avg_value)) +
         geom_bar(stat = "identity", fill = "#2b6cb0") +
         coord_flip() +
         labs(
-          title = title_text,
+          title = paste("Kantonsvergleich", var_label),
           x = "Kanton",
-          y = y_title
+          y = var_label
         ) +
         theme_minimal() +
         theme(
@@ -911,15 +698,16 @@ direct_democracy_server <- function(id, full_dataset) {
           axis.text = element_text(size = 10)
         )
       
-      # Add scale_y_continuous with breaks for full integers if abst_total, init_total, or ref_total is selected
-      if (selected_var %in% c("abst_total", "init_total", "ref_total", "obl_finref", "fak_finref")) {
+      # Add appropriate scale based on variable type
+      if (!is_continuous) {
+        # Integer scales for count variables
         p <- p + scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1))
-      }
-      
-      # Add scale_y_continuous with breaks for decimal values if turnout_v or ddr_snddi is selected
-      if (selected_var %in% c("turnout_v", "ddr_snddi")) {
-        decimal_places <- if(selected_var == "ddr_snddi") 2 else 1
-        p <- p + scale_y_continuous(labels = function(x) sprintf(paste0("%.", decimal_places, "f"), x))
+      } else {
+        # Decimal scales for continuous variables
+        decimal_format <- get_decimal_places(selected_var)
+        p <- p + scale_y_continuous(
+          labels = function(x) sprintf(paste0("%.", decimal_format, "f"), x)
+        )
       }
       
       # Convert to plotly
@@ -927,25 +715,22 @@ direct_democracy_server <- function(id, full_dataset) {
         layout(
           margin = list(l = 100),  # Add more margin on the left for canton names
           yaxis = list(
-            title = y_title,
-            tickformat = if(selected_var %in% c("turnout_v", "ddr_snddi")) 
-                         ifelse(selected_var == "ddr_snddi", ".2f", ".1f") else NULL
+            title = var_label,
+            tickformat = if(is_continuous) paste0(".", get_decimal_places(selected_var), "f") else ""
           )
         )
       
-      # Add special annotation for ddr_snddi
-      if(selected_var == "ddr_snddi") {
+      # Add note about data availability for index variables
+      if (is_index) {
         p <- p %>% layout(
           annotations = list(
-            list(
-              x = 0.5,
-              y = 1.05,
-              text = "Verfügbar nur für 2015-2023",
-              showarrow = FALSE,
-              xref = "paper",
-              yref = "paper",
-              font = list(size = 12)
-            )
+            x = 0.5,
+            y = 1.05,
+            text = "Hinweis: Für einige Jahre könnten Daten fehlen",
+            showarrow = FALSE,
+            xref = "paper",
+            yref = "paper",
+            font = list(size = 12)
           )
         )
       }
@@ -957,40 +742,25 @@ direct_democracy_server <- function(id, full_dataset) {
     output$data_table <- renderDT({
       req(filtered_data(), input$variables)
       data <- filtered_data()
+      selected_var <- input$variables
+      var_label <- get_var_label(selected_var)
+      is_continuous <- selected_var %in% continuous_vars
       
       # Select relevant columns
-      selected_cols <- c("kanton", "jahr", input$variables)
+      selected_cols <- c("kanton", "jahr", selected_var)
       table_data <- data %>% select(all_of(selected_cols))
       
       # Rename columns for display
-      names(table_data) <- c(
-        "Kanton",
-        "Jahr",
-        ifelse(input$variables == "abst_total", 
-               "Anzahl Abstimmungen",
-               ifelse(input$variables == "init_total",
-                     "Anzahl Abstimmungen über Volksinitiativen",
-                     ifelse(input$variables == "ref_total",
-                           "Anzahl Abstimmungen über Referenden",
-                           ifelse(input$variables == "turnout_v",
-                                 "Stimmbeteiligung in Prozent",
-                                 ifelse(input$variables == "ddr_snddi",
-                                       "Sub-National Direct Democracy Index",
-                                       ifelse(input$variables == "obl_finref",
-                                             "Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
-                                             ifelse(input$variables == "fak_finref",
-                                                   "Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
-                                                   input$variables)))))))
-      )
+      names(table_data) <- c("Kanton", "Jahr", var_label)
       
-      # Format values for specific variables
-      if (input$variables %in% c("turnout_v", "ddr_snddi")) {
-        col_index <- which(names(table_data) != "Kanton" & names(table_data) != "Jahr")
-        decimal_places <- if(input$variables == "ddr_snddi") 2 else 1
+      # Format values for continuous variables
+      if (is_continuous) {
+        col_index <- which(names(table_data) == var_label)
+        dp <- get_decimal_places(selected_var)
         
         table_data[[col_index]] <- sapply(table_data[[col_index]], function(x) {
           if (is.na(x)) return(NA)
-          sprintf(paste0("%.", decimal_places, "f"), as.numeric(x))
+          sprintf(paste0("%.", dp, "f"), as.numeric(x))
         })
       }
       
@@ -1004,206 +774,6 @@ direct_democracy_server <- function(id, full_dataset) {
         rownames = FALSE,
         class = "compact stripe"
       )
-    })
-    
-    # Correlation plot
-    output$correlation_plot <- renderPlotly({
-      req(filtered_data(), input$variables)
-      data <- filtered_data()
-      
-      # Get the selected variable
-      selected_var <- input$variables
-      
-      # Check if there are valid data points to correlate
-      if (all(is.na(data[[selected_var]]))) {
-        # Return an empty plot with a message if all values are NA
-        return(plot_ly() %>% 
-                 layout(title = "Keine Daten verfügbar für diese Variable",
-                        xaxis = list(title = ""),
-                        yaxis = list(title = "")))
-      }
-      
-      # Find potential correlates
-      potential_correlates <- names(data)[grep("institution|democracy|demokratie|vote|abstimmung|referendum|initiative",
-                                              names(data), ignore.case = TRUE)]
-      
-      # Remove the selected variable from potential correlates
-      potential_correlates <- potential_correlates[potential_correlates != selected_var]
-      
-      # Filter to only include variables that have at least some non-NA values
-      potential_correlates <- potential_correlates[sapply(potential_correlates, function(var) {
-        !all(is.na(data[[var]]))
-      })]
-      
-      # Check if there are any correlates left
-      if (length(potential_correlates) == 0) {
-        return(plot_ly() %>% 
-                 layout(title = "Keine korrelierten Variablen gefunden",
-                        xaxis = list(title = ""),
-                        yaxis = list(title = "")))
-      }
-      
-      # Calculate correlations with error handling
-      correlations <- sapply(potential_correlates, function(var) {
-        tryCatch({
-          # Check if there are enough paired non-NA values to calculate correlation
-          if (sum(!is.na(data[[selected_var]]) & !is.na(data[[var]])) < 2) {
-            return(NA)
-          }
-          cor(data[[selected_var]], data[[var]], use = "complete.obs")
-        }, error = function(e) {
-          return(NA)
-        })
-      })
-      
-      # Remove NA correlations
-      valid_correlations <- correlations[!is.na(correlations)]
-      
-      # Check if there are any valid correlations
-      if (length(valid_correlations) == 0) {
-        return(plot_ly() %>% 
-                 layout(title = "Keine validen Korrelationen gefunden",
-                        xaxis = list(title = ""),
-                        yaxis = list(title = "")))
-      }
-      
-      # Create correlation data frame
-      cor_data <- data.frame(
-        variable = names(valid_correlations),
-        correlation = valid_correlations
-      )
-      
-      # Create the plot
-      p <- ggplot(cor_data, aes(x = reorder(variable, correlation), y = correlation)) +
-        geom_bar(stat = "identity", fill = "#2b6cb0") +
-        coord_flip() +
-        labs(
-          title = paste("Korrelationen mit", 
-                       ifelse(selected_var == "abst_total", 
-                              "Anzahl Abstimmungen",
-                              ifelse(selected_var == "init_total",
-                                    "Anzahl Abstimmungen über Volksinitiativen",
-                                    ifelse(selected_var == "ref_total",
-                                          "Anzahl Abstimmungen über Referenden",
-                                          ifelse(selected_var == "turnout_v",
-                                                "Stimmbeteiligung bei kantonalen Volksabstimmungen",
-                                                ifelse(selected_var == "ddr_snddi",
-                                                      "Sub-National Direct Democracy Index",
-                                                      ifelse(selected_var == "obl_finref",
-                                                            "Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
-                                                            ifelse(selected_var == "fak_finref",
-                                                                  "Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
-                                                                  selected_var)))))))),
-          x = "Variable",
-          y = "Korrelation"
-        ) +
-        theme_minimal() +
-        theme(
-          plot.title = element_text(size = 16, face = "bold"),
-          axis.title = element_text(size = 12),
-          axis.text = element_text(size = 10)
-        )
-      
-      ggplotly(p) %>%
-        layout(
-          hovermode = "y unified",
-          showlegend = FALSE
-        )
-    })
-    
-    # Statistical summary
-    output$statistical_summary <- renderPrint({
-      req(filtered_data(), input$variables)
-      data <- filtered_data()
-      
-      # Get the selected variable
-      selected_var <- input$variables
-      
-      # Calculate summary statistics
-      summary_stats <- data %>%
-        summarise(
-          Mean = mean(!!sym(selected_var), na.rm = TRUE),
-          Median = median(!!sym(selected_var), na.rm = TRUE),
-          SD = sd(!!sym(selected_var), na.rm = TRUE),
-          Min = min(!!sym(selected_var), na.rm = TRUE),
-          Max = max(!!sym(selected_var), na.rm = TRUE),
-          N = n(),
-          Missing = sum(is.na(!!sym(selected_var)))
-        )
-      
-      # Format summary statistics for continuous variables (more decimal places)
-      if (selected_var %in% c("turnout_v", "ddr_snddi")) {
-        decimal_places <- if(selected_var == "ddr_snddi") 2 else 1
-        
-        summary_stats <- summary_stats %>%
-          mutate(across(c(Mean, Median, SD, Min, Max), ~round(., decimal_places)))
-      }
-      
-      # Identify cantons with all NA values
-      na_cantons <- data %>% 
-        group_by(kanton) %>% 
-        summarize(all_na = all(is.na(!!sym(selected_var)))) %>%
-        filter(all_na) %>% 
-        pull(kanton)
-      
-      # Calculate the completeness of data if selected_var is turnout_v or ddr_snddi
-      data_completeness <- NULL
-      years_with_data <- NULL
-      if(selected_var %in% c("turnout_v", "ddr_snddi")) {
-        # Calculate percentage of data available
-        total_possible <- nrow(data)
-        total_available <- total_possible - summary_stats$Missing
-        data_completeness <- round(100 * total_available / total_possible, 1)
-        
-        # Calculate how many years have at least some data
-        years_with_data <- data %>%
-          group_by(jahr) %>%
-          summarize(has_data = any(!is.na(!!sym(selected_var)))) %>%
-          summarize(count = sum(has_data)) %>%
-          pull(count)
-      }
-      
-      # Print the summary
-      cat("Statistische Zusammenfassung:\n\n")
-      cat(paste("Variable:", ifelse(selected_var == "abst_total", 
-                                   "Anzahl Abstimmungen",
-                                   ifelse(selected_var == "init_total",
-                                         "Anzahl Abstimmungen über Volksinitiativen",
-                                         ifelse(selected_var == "ref_total",
-                                               "Anzahl Abstimmungen über Referenden",
-                                               ifelse(selected_var == "turnout_v",
-                                                     "Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent",
-                                                     ifelse(selected_var == "ddr_snddi",
-                                                           "Sub-National Direct Democracy Index",
-                                                           ifelse(selected_var == "obl_finref",
-                                                                 "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
-                                                                 ifelse(selected_var == "fak_finref",
-                                                                       "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
-                                                                       selected_var))))))), "\n\n"))
-      
-      # Add a special note for ddr_snddi
-      if(selected_var == "ddr_snddi") {
-        cat("Hinweis: Diese Variable ist nur für die Jahre 2015-2023 verfügbar.\n\n")
-      }
-      
-      # Add a note about missing values if the selected variable has any
-      if (summary_stats$Missing > 0) {
-        cat(paste("Hinweis: Diese Variable enthält", summary_stats$Missing, "fehlende Werte (NA). Alle Berechnungen wurden ohne Berücksichtigung dieser Werte durchgeführt.\n\n"))
-        
-        # If it's turnout_v or ddr_snddi, add more detailed information about data completeness
-        if(selected_var %in% c("turnout_v", "ddr_snddi")) {
-          cat(paste("Datenverfügbarkeit:", data_completeness, "% aller möglichen Datenpunkte\n"))
-          cat(paste("Jahre mit Daten:", years_with_data, "von", length(unique(data$jahr)), "\n\n"))
-        }
-        
-        # If there are cantons with all NA values, list them
-        if (length(na_cantons) > 0) {
-          cat(paste("Folgende Kantone haben nur NA-Werte für diese Variable und wurden aus den Visualisierungen ausgeschlossen:\n", 
-                   paste(na_cantons, collapse=", "), "\n\n"))
-        }
-      }
-      
-      print(summary_stats)
     })
   })
 } 
