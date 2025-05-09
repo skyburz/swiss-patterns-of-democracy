@@ -88,7 +88,10 @@ municipalities_ui <- function(id) {
                   choices = c(
                     "Ausmass kantonaler Vorgaben zu obligatorischen Referenden" = "ddr_gde_obl",
                     "Ausmass kantonaler Vorgaben zu fakultativen Referenden" = "ddr_gde_fak",
-                    "Ausmass kantonaler Vorgaben zu kommunalen Initiativen" = "ddr_gde_init"
+                    "Ausmass kantonaler Vorgaben zu kommunalen Initiativen" = "ddr_gde_init",
+                    "Policy-Dezentralisierung" = "dez_policy",
+                    "Polity-Dezentralisierung" = "dez_polity",
+                    "Politics-Dezentralisierung" = "dez_politics"
                   ),
                   selected = "ddr_gde_obl"
                 ),
@@ -223,7 +226,8 @@ municipalities_server <- function(id, full_dataset) {
       data <- full_dataset()
       
       # Clean all municipality variables - replace dots and empty strings with NA
-      municipality_vars <- c("ddr_gde_obl", "ddr_gde_fak", "ddr_gde_init")
+      municipality_vars <- c("ddr_gde_obl", "ddr_gde_fak", "ddr_gde_init", 
+                           "dez_policy", "dez_polity", "dez_politics")
       
       for(var in municipality_vars) {
         if (var %in% names(data)) {
@@ -301,7 +305,10 @@ municipalities_server <- function(id, full_dataset) {
       labels <- c(
         "ddr_gde_obl" = "Ausmass kantonaler Vorgaben zu obligatorischen Referenden",
         "ddr_gde_fak" = "Ausmass kantonaler Vorgaben zu fakultativen Referenden",
-        "ddr_gde_init" = "Ausmass kantonaler Vorgaben zu kommunalen Initiativen"
+        "ddr_gde_init" = "Ausmass kantonaler Vorgaben zu kommunalen Initiativen",
+        "dez_policy" = "Policy-Dezentralisierung",
+        "dez_polity" = "Polity-Dezentralisierung",
+        "dez_politics" = "Politics-Dezentralisierung"
       )
       
       return(labels[var_name])
