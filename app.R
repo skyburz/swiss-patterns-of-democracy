@@ -96,15 +96,6 @@ ui <- page_navbar(
     direct_democracy_ui("direct_democracy")
   ),
   
-  # Map Visualization
-  nav_panel(
-    title = "Kantonskarte",
-    icon = bsicons::bs_icon("map"),
-    
-    # Add our canton map module UI here
-    canton_map_ui("canton_map")
-  ),
-  
   # Elections page
   nav_panel(
     title = "Wahlen",
@@ -121,6 +112,15 @@ ui <- page_navbar(
     
     # Add our municipalities module UI here
     municipalities_ui("municipalities")
+  ),
+  
+  # Map Visualization - moved here between Gemeinden and Über
+  nav_panel(
+    title = "Kantonskarte",
+    icon = bsicons::bs_icon("map"),
+    
+    # Add our canton map module UI here
+    canton_map_ui("canton_map")
   ),
   
   # About page
@@ -198,8 +198,8 @@ server <- function(input, output, session) {
   # Call direct democracy module server and pass the selected_data reactive
   direct_democracy_server("direct_democracy", selected_data)
   
-  # Call canton map module server and pass the cantonal data
-  canton_map_server("canton_map", cantonal_data)
+  # Call canton map module server and pass the selected_data reactive
+  canton_map_server("canton_map", selected_data)
   
   # Call elections module server and pass the selected_data reactive
   elections_server("elections", selected_data)
