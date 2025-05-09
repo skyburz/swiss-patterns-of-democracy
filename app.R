@@ -8,6 +8,7 @@ source("R/democratic_institutions_module.R")
 source("R/direct_democracy_module.R")
 source("R/canton_map_module.R")
 source("R/elections_module.R")
+source("R/municipalities_module.R")
 
 # User Interface ---------------------------------------------------------
 ui <- page_navbar(
@@ -113,6 +114,15 @@ ui <- page_navbar(
     elections_ui("elections")
   ),
   
+  # Municipalities page
+  nav_panel(
+    title = "Gemeinden",
+    icon = bsicons::bs_icon("houses"),
+    
+    # Add our municipalities module UI here
+    municipalities_ui("municipalities")
+  ),
+  
   # About page
   nav_panel(
     title = "Über",
@@ -193,6 +203,9 @@ server <- function(input, output, session) {
   
   # Call elections module server and pass the selected_data reactive
   elections_server("elections", selected_data)
+  
+  # Call municipalities module server and pass the selected_data reactive
+  municipalities_server("municipalities", selected_data)
 }
 
 # Run the application
