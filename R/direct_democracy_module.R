@@ -246,6 +246,22 @@ direct_democracy_server <- function(id, full_dataset) {
                                   as.numeric(as.character(ddr_snddi))))
       }
       
+      # Clean obl_finref - replace dots and empty strings with NA
+      if ("obl_finref" %in% names(data)) {
+        data <- data %>%
+          mutate(obl_finref = ifelse(obl_finref == "." | obl_finref == "" | is.na(obl_finref), 
+                                    NA_real_, 
+                                    as.numeric(as.character(obl_finref))))
+      }
+      
+      # Clean fak_finref - replace dots and empty strings with NA
+      if ("fak_finref" %in% names(data)) {
+        data <- data %>%
+          mutate(fak_finref = ifelse(fak_finref == "." | fak_finref == "" | is.na(fak_finref), 
+                                    NA_real_, 
+                                    as.numeric(as.character(fak_finref))))
+      }
+      
       return(data)
     })
     
@@ -307,6 +323,8 @@ direct_democracy_server <- function(id, full_dataset) {
         if("ref_total" %in% names(data)) "ref_total" else NULL,
         if("turnout_v" %in% names(data)) "turnout_v" else NULL,
         if("ddr_snddi" %in% names(data)) "ddr_snddi" else NULL,
+        if("obl_finref" %in% names(data)) "obl_finref" else NULL,
+        if("fak_finref" %in% names(data)) "fak_finref" else NULL,
         # Then get other direct democracy variables
         names(data)[grep("abstimmung|referendum|initiative|volksabstimmung|volksinitiative",
                          names(data), ignore.case = TRUE)]
@@ -333,7 +351,15 @@ direct_democracy_server <- function(id, full_dataset) {
                 ifelse(
                   direct_democracy_cols == "ddr_snddi",
                   "Sub-National Direct Democracy Index",
-                  direct_democracy_cols
+                  ifelse(
+                    direct_democracy_cols == "obl_finref",
+                    "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
+                    ifelse(
+                      direct_democracy_cols == "fak_finref",
+                      "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
+                      direct_democracy_cols
+                    )
+                  )
                 )
               )
             )
@@ -614,7 +640,11 @@ direct_democracy_server <- function(id, full_dataset) {
                                       "der Gesamtzahl Abstimmungen über Volksinitiativen",
                                       ifelse(selected_var == "ref_total",
                                             "der Gesamtzahl Abstimmungen über Referenden",
-                                            selected_var)))),
+                                            ifelse(selected_var == "obl_finref",
+                                                  "der Gesamtzahl Abstimmungen über obligatorische Finanzreferenden",
+                                                  ifelse(selected_var == "fak_finref",
+                                                        "der Gesamtzahl Abstimmungen über fakultative Finanzreferenden",
+                                                        selected_var)))))),
               x = "Jahr",
               y = ifelse(selected_var == "abst_total", 
                         "Gesamtzahl Abstimmungen",
@@ -622,7 +652,11 @@ direct_democracy_server <- function(id, full_dataset) {
                               "Jährliche Anzahl Abstimmungen über Volksinitiativen",
                               ifelse(selected_var == "ref_total",
                                     "Jährliche Anzahl Abstimmungen über Referenden",
-                                    selected_var)))
+                                    ifelse(selected_var == "obl_finref",
+                                          "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden",
+                                          ifelse(selected_var == "fak_finref",
+                                                "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden",
+                                                selected_var)))))
             )
         }
       } else {
@@ -750,21 +784,28 @@ direct_democracy_server <- function(id, full_dataset) {
             labs(
               title = paste("Zeittrend", 
                           ifelse(selected_var == "abst_total", 
-                                "der Anzahl Abstimmungen",
+                                "der Gesamtzahl Abstimmungen",
                                 ifelse(selected_var == "init_total",
-                                      "der Anzahl Abstimmungen über Volksinitiativen",
+                                      "der Gesamtzahl Abstimmungen über Volksinitiativen",
                                       ifelse(selected_var == "ref_total",
-                                            "der Anzahl Abstimmungen über Referenden",
-                                            selected_var)))),
+                                            "der Gesamtzahl Abstimmungen über Referenden",
+                                            ifelse(selected_var == "obl_finref",
+                                                  "der Gesamtzahl Abstimmungen über obligatorische Finanzreferenden",
+                                                  ifelse(selected_var == "fak_finref",
+                                                        "der Gesamtzahl Abstimmungen über fakultative Finanzreferenden",
+                                                        selected_var)))))),
               x = "Jahr",
               y = ifelse(selected_var == "abst_total", 
-                        "Anzahl Abstimmungen",
+                        "Gesamtzahl Abstimmungen",
                         ifelse(selected_var == "init_total",
-                              "Anzahl Abstimmungen über Volksinitiativen",
+                              "Jährliche Anzahl Abstimmungen über Volksinitiativen",
                               ifelse(selected_var == "ref_total",
-                                    "Anzahl Abstimmungen über Referenden",
-                                    selected_var))),
-              color = "Kanton"
+                                    "Jährliche Anzahl Abstimmungen über Referenden",
+                                    ifelse(selected_var == "obl_finref",
+                                          "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden",
+                                          ifelse(selected_var == "fak_finref",
+                                                "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden",
+                                                selected_var)))))
             )
         }
       }
@@ -844,7 +885,11 @@ direct_democracy_server <- function(id, full_dataset) {
                                                 "Stimmbeteiligung bei kantonalen Volksabstimmungen",
                                                 ifelse(selected_var == "ddr_snddi",
                                                       "Sub-National Direct Democracy Index Werte",
-                                                      selected_var))))))
+                                                      ifelse(selected_var == "obl_finref",
+                                                            "Anzahl Abstimmungen über obligatorische Finanzreferenden",
+                                                            ifelse(selected_var == "fak_finref",
+                                                                  "Anzahl Abstimmungen über fakultative Finanzreferenden",
+                                                                  selected_var))))))))
       
       y_title <- ifelse(selected_var == "abst_total", 
                       "Anzahl Abstimmungen",
@@ -856,7 +901,11 @@ direct_democracy_server <- function(id, full_dataset) {
                                         "Stimmbeteiligung in Prozent",
                                         ifelse(selected_var == "ddr_snddi",
                                               "Direct Democracy Index Wert",
-                                              selected_var)))))
+                                              ifelse(selected_var == "obl_finref",
+                                                    "Anzahl Abstimmungen über obligatorische Finanzreferenden",
+                                                    ifelse(selected_var == "fak_finref",
+                                                          "Anzahl Abstimmungen über fakultative Finanzreferenden",
+                                                          selected_var)))))))
       
       # Create the plot
       p <- ggplot(canton_avg, aes(x = reorder(kanton, avg_value), y = avg_value)) +
@@ -875,7 +924,7 @@ direct_democracy_server <- function(id, full_dataset) {
         )
       
       # Add scale_y_continuous with breaks for full integers if abst_total, init_total, or ref_total is selected
-      if (selected_var %in% c("abst_total", "init_total", "ref_total")) {
+      if (selected_var %in% c("abst_total", "init_total", "ref_total", "obl_finref", "fak_finref")) {
         p <- p + scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1))
       }
       
@@ -958,7 +1007,11 @@ direct_democracy_server <- function(id, full_dataset) {
                                                 "Stimmbeteiligung bei kantonalen Volksabstimmungen",
                                                 ifelse(selected_var == "ddr_snddi",
                                                       "Sub-National Direct Democracy Index Werte",
-                                                      selected_var))))))
+                                                      ifelse(selected_var == "obl_finref",
+                                                            "Anzahl Abstimmungen über obligatorische Finanzreferenden",
+                                                            ifelse(selected_var == "fak_finref",
+                                                                  "Anzahl Abstimmungen über fakultative Finanzreferenden",
+                                                                  selected_var))))))))
       
       x_title <- ifelse(selected_var == "abst_total", 
                       "Anzahl Abstimmungen",
@@ -970,25 +1023,54 @@ direct_democracy_server <- function(id, full_dataset) {
                                         "Stimmbeteiligung in Prozent",
                                         ifelse(selected_var == "ddr_snddi",
                                               "Direct Democracy Index Wert",
-                                              selected_var)))))
+                                              ifelse(selected_var == "obl_finref",
+                                                    "Anzahl Abstimmungen über obligatorische Finanzreferenden",
+                                                    ifelse(selected_var == "fak_finref",
+                                                          "Anzahl Abstimmungen über fakultative Finanzreferenden",
+                                                          selected_var)))))))
       
       # Adjust bin count for continuous vs discrete variables
       bin_count <- if(selected_var %in% c("turnout_v", "ddr_snddi")) 20 else 30
       
-      # Create the plot
-      p <- ggplot(data, aes(x = !!sym(selected_var))) +
-        geom_histogram(bins = bin_count, fill = "#2b6cb0", color = "white") +
-        labs(
-          title = title_text,
-          x = x_title,
-          y = "Häufigkeit"
-        ) +
-        theme_minimal() +
-        theme(
-          plot.title = element_text(size = 16, face = "bold"),
-          axis.title = element_text(size = 12),
-          axis.text = element_text(size = 10)
-        )
+      # Make sure integer variables have appropriate bins
+      if(selected_var %in% c("abst_total", "init_total", "ref_total", "obl_finref", "fak_finref")) {
+        # Get the range of values
+        min_val <- floor(min(data[[selected_var]], na.rm = TRUE))
+        max_val <- ceiling(max(data[[selected_var]], na.rm = TRUE))
+        
+        # For integer values, use breaks at each integer
+        integer_breaks <- seq(min_val, max_val, by = 1)
+        
+        # Adjust the plot to use these breaks
+        p <- ggplot(data, aes(x = !!sym(selected_var))) +
+          geom_histogram(breaks = integer_breaks, fill = "#2b6cb0", color = "white") +
+          labs(
+            title = title_text,
+            x = x_title,
+            y = "Häufigkeit"
+          ) +
+          theme_minimal() +
+          theme(
+            plot.title = element_text(size = 16, face = "bold"),
+            axis.title = element_text(size = 12),
+            axis.text = element_text(size = 10)
+          )
+      } else {
+        # Create the plot
+        p <- ggplot(data, aes(x = !!sym(selected_var))) +
+          geom_histogram(bins = bin_count, fill = "#2b6cb0", color = "white") +
+          labs(
+            title = title_text,
+            x = x_title,
+            y = "Häufigkeit"
+          ) +
+          theme_minimal() +
+          theme(
+            plot.title = element_text(size = 16, face = "bold"),
+            axis.title = element_text(size = 12),
+            axis.text = element_text(size = 10)
+          )
+      }
       
       # Modify x-axis for continuous variables
       if (selected_var %in% c("turnout_v", "ddr_snddi")) {
@@ -1049,7 +1131,11 @@ direct_democracy_server <- function(id, full_dataset) {
                                  "Stimmbeteiligung in Prozent",
                                  ifelse(input$variables == "ddr_snddi",
                                        "Sub-National Direct Democracy Index",
-                                       input$variables)))))
+                                       ifelse(input$variables == "obl_finref",
+                                             "Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
+                                             ifelse(input$variables == "fak_finref",
+                                                   "Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
+                                                   input$variables)))))))
       )
       
       # Format values for specific variables
@@ -1156,7 +1242,13 @@ direct_democracy_server <- function(id, full_dataset) {
                                           "Anzahl Abstimmungen über Referenden",
                                           ifelse(selected_var == "turnout_v",
                                                 "Stimmbeteiligung bei kantonalen Volksabstimmungen",
-                                                selected_var))))),
+                                                ifelse(selected_var == "ddr_snddi",
+                                                      "Sub-National Direct Democracy Index",
+                                                      ifelse(selected_var == "obl_finref",
+                                                            "Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
+                                                            ifelse(selected_var == "fak_finref",
+                                                                  "Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
+                                                                  selected_var)))))))),
           x = "Variable",
           y = "Korrelation"
         ) +
@@ -1238,7 +1330,11 @@ direct_democracy_server <- function(id, full_dataset) {
                                                      "Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent",
                                                      ifelse(selected_var == "ddr_snddi",
                                                            "Sub-National Direct Democracy Index",
-                                                           selected_var))))), "\n\n"))
+                                                           ifelse(selected_var == "obl_finref",
+                                                                 "Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
+                                                                 ifelse(selected_var == "fak_finref",
+                                                                       "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
+                                                                       selected_var))))))), "\n\n"))
       
       # Add a special note for ddr_snddi
       if(selected_var == "ddr_snddi") {
