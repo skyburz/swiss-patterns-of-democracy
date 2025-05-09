@@ -180,10 +180,6 @@ direct_democracy_ui <- function(id) {
                   class = "plot-container",
                   plotlyOutput(ns("canton_comparison_plot"), height = "500px")
                 )
-              ),
-              tabPanel(
-                "Institutionsdetails",
-                plotlyOutput(ns("institution_details_plot"), height = "400px") 
               )
             )
           )
@@ -201,14 +197,6 @@ direct_democracy_ui <- function(id) {
               tabPanel(
                 "Datentabelle",
                 DTOutput(ns("data_table"))
-              ),
-              tabPanel(
-                "Korrelationskarte",
-                plotlyOutput(ns("correlation_plot"), height = "600px")
-              ),
-              tabPanel(
-                "Statistische Zusammenfassung",
-                verbatimTextOutput(ns("statistical_summary"))
               )
             )
           )
@@ -357,7 +345,7 @@ direct_democracy_server <- function(id, full_dataset) {
                     ifelse(
                       direct_democracy_cols == "fak_finref",
                       "Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)",
-                      direct_democracy_cols
+                  direct_democracy_cols
                     )
                   )
                 )
@@ -940,149 +928,6 @@ direct_democracy_server <- function(id, full_dataset) {
           margin = list(l = 100),  # Add more margin on the left for canton names
           yaxis = list(
             title = y_title,
-            tickformat = if(selected_var %in% c("turnout_v", "ddr_snddi")) 
-                         ifelse(selected_var == "ddr_snddi", ".2f", ".1f") else NULL
-          )
-        )
-      
-      # Add special annotation for ddr_snddi
-      if(selected_var == "ddr_snddi") {
-        p <- p %>% layout(
-          annotations = list(
-            list(
-              x = 0.5,
-              y = 1.05,
-              text = "Verfügbar nur für 2015-2023",
-              showarrow = FALSE,
-              xref = "paper",
-              yref = "paper",
-              font = list(size = 12)
-            )
-          )
-        )
-      }
-      
-      return(p)
-    })
-    
-    # Institution details plot
-    output$institution_details_plot <- renderPlotly({
-      req(filtered_data(), input$variables)
-      data <- filtered_data()
-      
-      # Get the selected variable
-      selected_var <- input$variables
-      
-      # Check if there are valid data points to plot
-      if (all(is.na(data[[selected_var]]))) {
-        # Return an empty plot with a message if all values are NA
-        return(plot_ly() %>% 
-                 layout(title = "Keine Daten verfügbar für diese Variable",
-                        xaxis = list(title = ""),
-                        yaxis = list(title = "")))
-      }
-      
-      # Filter out NAs for the histogram
-      if (anyNA(data[[selected_var]])) {
-        data <- data %>% filter(!is.na(!!sym(selected_var)))
-      }
-      
-      # Check if there are any rows left after filtering
-      if (nrow(data) == 0) {
-        return(plot_ly() %>% 
-                 layout(title = "Keine Daten verfügbar für diese Kombination von Filtern",
-                        xaxis = list(title = ""),
-                        yaxis = list(title = "")))
-      }
-      
-      # Get title and axis labels
-      title_text <- paste("Verteilung der", 
-                       ifelse(selected_var == "abst_total", 
-                              "Anzahl Abstimmungen",
-                              ifelse(selected_var == "init_total",
-                                    "Anzahl Abstimmungen über Volksinitiativen",
-                                    ifelse(selected_var == "ref_total",
-                                          "Anzahl Abstimmungen über Referenden",
-                                          ifelse(selected_var == "turnout_v",
-                                                "Stimmbeteiligung bei kantonalen Volksabstimmungen",
-                                                ifelse(selected_var == "ddr_snddi",
-                                                      "Sub-National Direct Democracy Index Werte",
-                                                      ifelse(selected_var == "obl_finref",
-                                                            "Anzahl Abstimmungen über obligatorische Finanzreferenden",
-                                                            ifelse(selected_var == "fak_finref",
-                                                                  "Anzahl Abstimmungen über fakultative Finanzreferenden",
-                                                                  selected_var))))))))
-      
-      x_title <- ifelse(selected_var == "abst_total", 
-                      "Anzahl Abstimmungen",
-                      ifelse(selected_var == "init_total",
-                            "Anzahl Abstimmungen über Volksinitiativen",
-                            ifelse(selected_var == "ref_total",
-                                  "Anzahl Abstimmungen über Referenden",
-                                  ifelse(selected_var == "turnout_v",
-                                        "Stimmbeteiligung in Prozent",
-                                        ifelse(selected_var == "ddr_snddi",
-                                              "Direct Democracy Index Wert",
-                                              ifelse(selected_var == "obl_finref",
-                                                    "Anzahl Abstimmungen über obligatorische Finanzreferenden",
-                                                    ifelse(selected_var == "fak_finref",
-                                                          "Anzahl Abstimmungen über fakultative Finanzreferenden",
-                                                          selected_var)))))))
-      
-      # Adjust bin count for continuous vs discrete variables
-      bin_count <- if(selected_var %in% c("turnout_v", "ddr_snddi")) 20 else 30
-      
-      # Make sure integer variables have appropriate bins
-      if(selected_var %in% c("abst_total", "init_total", "ref_total", "obl_finref", "fak_finref")) {
-        # Get the range of values
-        min_val <- floor(min(data[[selected_var]], na.rm = TRUE))
-        max_val <- ceiling(max(data[[selected_var]], na.rm = TRUE))
-        
-        # For integer values, use breaks at each integer
-        integer_breaks <- seq(min_val, max_val, by = 1)
-        
-        # Adjust the plot to use these breaks
-        p <- ggplot(data, aes(x = !!sym(selected_var))) +
-          geom_histogram(breaks = integer_breaks, fill = "#2b6cb0", color = "white") +
-          labs(
-            title = title_text,
-            x = x_title,
-            y = "Häufigkeit"
-          ) +
-          theme_minimal() +
-          theme(
-            plot.title = element_text(size = 16, face = "bold"),
-            axis.title = element_text(size = 12),
-            axis.text = element_text(size = 10)
-          )
-      } else {
-        # Create the plot
-        p <- ggplot(data, aes(x = !!sym(selected_var))) +
-          geom_histogram(bins = bin_count, fill = "#2b6cb0", color = "white") +
-          labs(
-            title = title_text,
-            x = x_title,
-            y = "Häufigkeit"
-          ) +
-          theme_minimal() +
-          theme(
-            plot.title = element_text(size = 16, face = "bold"),
-            axis.title = element_text(size = 12),
-            axis.text = element_text(size = 10)
-          )
-      }
-      
-      # Modify x-axis for continuous variables
-      if (selected_var %in% c("turnout_v", "ddr_snddi")) {
-        decimal_places <- if(selected_var == "ddr_snddi") 2 else 1
-        p <- p + scale_x_continuous(labels = function(x) sprintf(paste0("%.", decimal_places, "f"), x))
-      }
-      
-      # Convert to plotly
-      p <- ggplotly(p) %>%
-        layout(
-          xaxis = list(
-            title = x_title,
             tickformat = if(selected_var %in% c("turnout_v", "ddr_snddi")) 
                          ifelse(selected_var == "ddr_snddi", ".2f", ".1f") else NULL
           )

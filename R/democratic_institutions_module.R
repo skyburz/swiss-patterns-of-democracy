@@ -181,12 +181,8 @@ democratic_institutions_ui <- function(id) {
                 "Kantonsvergleich",
                 div(
                   class = "plot-container",
-                  plotlyOutput(ns("canton_comparison_plot"), height = "500px")  # Reduced height
+                  plotlyOutput(ns("canton_comparison_plot"), height = "500px")
                 )
-              ),
-              tabPanel(
-                "Institutionsdetails",
-                plotlyOutput(ns("institution_details_plot"), height = "400px") 
               )
             )
           )
@@ -204,14 +200,6 @@ democratic_institutions_ui <- function(id) {
               tabPanel(
                 "Datentabelle",
                 DTOutput(ns("data_table"))
-              ),
-              tabPanel(
-                "Korrelationskarte",
-                plotlyOutput(ns("correlation_plot"), height = "600px")
-              ),
-              tabPanel(
-                "Statistische Zusammenfassung",
-                verbatimTextOutput(ns("statistical_summary"))
               )
             )
           )
@@ -789,76 +777,6 @@ democratic_institutions_server <- function(id, selected_data) {
           # Add more margin at the top to accommodate the labels
           margin = list(t = 100, b = 100)
         )
-    })
-    
-    # Institution details plot
-    output$institution_details_plot <- renderPlotly({
-      req(filtered_data())
-      req(input$institutions)
-      
-      data <- filtered_data()
-      
-      # Get the selected institution
-      selected_institution <- input$institutions
-      
-      # Ensure gallagher is numeric if it's the selected institution
-      if(selected_institution == "gallagher" && "gallagher" %in% names(data)) {
-        data$gallagher <- as.numeric(data$gallagher)
-      }
-      
-      # Set title based on the selected institution
-      plot_title <- if(selected_institution == "sitzparl") {
-        "Verteilung der Parlamentssitze"
-      } else if(selected_institution == "sitzreg") {
-        "Verteilung der Regierungssitze"
-      } else if(selected_institution == "proporz") {
-        "Verteilung der Proporzwahl"
-      } else if(selected_institution == "parlegisl") {
-        "Verteilung der Amtsdauer des Parlaments"
-      } else if(selected_institution == "gallagher") {
-        "Verteilung der Disproportionalität des Wahlsystems"
-      } else if(selected_institution == "proporz4") {
-        "Verteilung der Proportionalität des Wahlsystems bei Parlamentswahlen"
-      } else if(selected_institution == "proporz3reg") {
-        "Verteilung der Proportionalität der Wahlsysteme bei Parlaments- und Regierungswahlen"
-      } else if(selected_institution == "reg_proporz") {
-        "Verteilung des Wahlverfahrens bei Regierungsratswahlen"
-      } else {
-        paste("Verteilung von", selected_institution)
-      }
-      
-      # Set x-axis label based on the selected institution
-      x_label <- if(selected_institution == "sitzparl") {
-        "Parlamentssitze"
-      } else if(selected_institution == "sitzreg") {
-        "Regierungssitze"
-      } else if(selected_institution == "proporz") {
-        "Proporzwahl"
-      } else if(selected_institution == "parlegisl") {
-        "Amtsdauer in Jahren"
-      } else if(selected_institution == "gallagher") {
-        "Disproportionalitätsindex"
-      } else if(selected_institution == "proporz4") {
-        "Proportionalitätsindex"
-      } else if(selected_institution == "proporz3reg") {
-        "Proportionalitätsindex"
-      } else if(selected_institution == "reg_proporz") {
-        "Wahlverfahren (0=Majorz, 1=Proporz)"
-      } else {
-        selected_institution
-      }
-      
-      # Create histogram for the selected institution
-      p <- ggplot(data, aes_string(x = selected_institution)) +
-        geom_histogram(bins = 10, fill = "#2C3E50", color = "white") +
-        theme_minimal() +
-        labs(
-          title = plot_title,
-          x = x_label,
-          y = "Anzahl"
-        )
-      
-      ggplotly(p)
     })
     
     # Data table

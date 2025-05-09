@@ -363,24 +363,20 @@ elections_ui <- function(id) {
           card_header("Überblick über Wahlen"),
           card_body(
             tabsetPanel(
-              id = ns("main_tabs"),  # Add ID to the tabsetPanel for observing tab changes
+              id = ns("main_tabs"),
               tabPanel(
                 "Zeittrend",
                 div(
                   class = "plot-container",
-                  plotlyOutput(ns("time_trend_plot"), height = "500px")  # Reduced height
+                  plotlyOutput(ns("time_trend_plot"), height = "500px")
                 )
               ),
               tabPanel(
                 "Kantonsvergleich",
                 div(
                   class = "plot-container",
-                  plotlyOutput(ns("canton_comparison_plot"), height = "500px")  # Reduced height
+                  plotlyOutput(ns("canton_comparison_plot"), height = "500px")
                 )
-              ),
-              tabPanel(
-                "Institutionsdetails",
-                plotlyOutput(ns("institution_details_plot"), height = "400px") 
               )
             )
           )
@@ -398,14 +394,6 @@ elections_ui <- function(id) {
               tabPanel(
                 "Datentabelle",
                 DTOutput(ns("data_table"))
-              ),
-              tabPanel(
-                "Korrelationskarte",
-                plotlyOutput(ns("correlation_plot"), height = "600px")
-              ),
-              tabPanel(
-                "Statistische Zusammenfassung",
-                verbatimTextOutput(ns("statistical_summary"))
               )
             )
           )
