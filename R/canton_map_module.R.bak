@@ -140,20 +140,21 @@ canton_map_server <- function(id, data) {
         "Effektive Disproportionalität des Wahlsystems" = "gallagher"
       ),
       
-      # Government election variables
+      # Government election variables - updated with only variables that exist in the dataset
       government = c(
         "Regierungssitze" = "sitzreg",
-        "Regierungsratswahlen im entsprechenden Jahr" = "reg_election",
+        "Regierungsratswahlen im Jahr" = "reg_election",
+        "Anzahl Regierungsparteien" = "reg_party",
         "Summierte Wähleranteile der Regierungsparteien" = "reg_konk",
         "Konkordanz" = "konk_2",
-        "Linkes Lager" = "reg_left",
-        "Mitte-Lager" = "reg_cent",
-        "Rechtes Lager" = "reg_right",
-        "Katholisches Lager" = "reg_kath",
-        "Grünes Lager" = "reg_gruene",
+        "Linkes Lager in der Regierung" = "reg_left",
+        "Mitte-Lager in der Regierung" = "reg_cent",
+        "Rechtes Lager in der Regierung" = "reg_right", 
+        "Katholisches Lager in der Regierung" = "reg_kath",
+        "Grünes Lager in der Regierung" = "reg_gruene",
         "Parteipolitische Spannweite der Regierungskoalition" = "spann",
         "100 Prozent minus Sitzanteil stärkste Partei" = "wett_reg_se",
-        "Unterschied grösste–zweitgrösste Partei (Reg.) in Prozent aller Sitze" = "wett_reg2_se",
+        "Unterschied grösste–zweitgrösste Partei" = "wett_reg2_se",
         "Anzahl der Sitze der stärksten Regierungspartei" = "max_sitzzahl_reg",
         "Anzahl stärkster/bestplatzierter Regierungsparteien" = "n_bestplatzierte_sitzzahl_reg",
         "Grösse der typischen Regierungspartei" = "g",
@@ -173,44 +174,49 @@ canton_map_server <- function(id, data) {
       )
     ))
     
-    # Helper function to process year data and join with Swiss map
-    process_year_data <- function(year_data, swiss_map, variable_name) {
-      print(paste("Processing year data for variable:", variable_name))
+    # Force a refresh of the variable_mappings when the module starts
+    # This ensures any changes to the variable definitions are applied
+    observe({
+      # Get the current mappings
+      current_mappings <- variable_mappings()
       
-      # Check if we have data
-      if(nrow(year_data) == 0) {
-        print("No data available for the selected year")
-        return(swiss_map %>% mutate(!!sym(variable_name) := NA))
+      # Update the variable mappings (essentially forcing a refresh)
+      variable_mappings(current_mappings)
+      
+      # Debug output
+      print("Canton map module variable mappings refreshed")
+    })
+    
+    # Validate that all variables in government category exist in the dataset
+    observe({
+      req(data())
+      
+      # Get current variable mappings
+      current_mappings <- variable_mappings()
+      
+      # Get government variables
+      gov_vars <- current_mappings$government
+      
+      # Check which variables actually exist in the dataset
+      available_vars <- names(data())
+      valid_gov_vars <- gov_vars[gov_vars %in% available_vars]
+      
+      # Debug output
+      missing_vars <- gov_vars[!gov_vars %in% available_vars]
+      if(length(missing_vars) > 0) {
+        print("Warning: The following government variables are not in the dataset:")
+        print(missing_vars)
+        print("These variables will not be displayed properly.")
       }
       
-      # Check if variable exists in the data
-      if(!(variable_name %in% names(year_data))) {
-        print(paste("Variable", variable_name, "not found in year data"))
-        return(swiss_map %>% mutate(!!sym(variable_name) := NA))
+      # Ensure only valid variables are displayed
+      if(!identical(gov_vars, valid_gov_vars) && length(valid_gov_vars) > 0) {
+        # Update the government variables to only include valid ones
+        current_mappings$government <- valid_gov_vars
+        variable_mappings(current_mappings)
+        print("Updated government variables to include only those in the dataset")
       }
-      
-      # Select kanton and variable column
-      year_data <- year_data %>% select(kanton, !!sym(variable_name))
-      
-      # Print debug info
-      print(paste("Number of rows in year data:", nrow(year_data)))
-      print(paste("Number of NAs in variable:", sum(is.na(year_data[[variable_name]]))))
-      print(paste("Number of valid values:", sum(!is.na(year_data[[variable_name]]))))
-      
-      # Print a sample of the data
-      print("Sample of year data:")
-      print(head(year_data))
-      
-      # Join with map data using abbreviations
-      map_with_data <- swiss_map %>%
-        left_join(year_data, by = c("kanton_abbr" = "kanton"))
-      
-      # Print info about the joined data
-      print(paste("Final map data created with", nrow(map_with_data), "features"))
-      print(paste("Number of NAs in final map:", sum(is.na(map_with_data[[variable_name]]))))
-      
-      return(map_with_data)
-    }
+    })
     
     # Update variable selection based on chosen category
     observe({
@@ -232,6 +238,12 @@ canton_map_server <- function(id, data) {
         }
       }
       
+      # Debug output when government category is selected
+      if(input$category == "government") {
+        print("Government variables available:")
+        print(names(variables))
+      }
+      
       updateSelectInput(
         session,
         "variable",
@@ -249,15 +261,6 @@ canton_map_server <- function(id, data) {
           session,
           "year",
           value = 2018
-        )
-      }
-      
-      # Special year handling for municipality variables - set to 2019 only
-      if(input$variable %in% c("ddr_gde_obl", "ddr_gde_fak", "ddr_gde_init")) {
-        updateSliderInput(
-          session,
-          "year",
-          value = 2019
         )
       }
     })
@@ -324,137 +327,15 @@ canton_map_server <- function(id, data) {
       # List of direct democracy indices that need special handling
       dd_indices <- c("ddr_stutz", "gir", "vir", "grr", "frr", "ddr_snddi")
       
-      # Create a clean version of the data with proper type conversion
-      data_clean <- data()
-      
-      # Special handling for municipality variables
-      if(input$variable %in% c("ddr_gde_obl", "ddr_gde_fak", "ddr_gde_init", "dez_policy", "dez_polity", "dez_politics")) {
-        print(paste("Special handling for", input$variable, "variable"))
-        
-        # Print debug info about dataset
-        print(paste("Number of rows in original data:", nrow(data_clean)))
-        print(paste("Column exists in data:", input$variable %in% names(data_clean)))
-        
-        # For these specific municipality variables, only show data for 2019
-        if(input$variable %in% c("ddr_gde_obl", "ddr_gde_fak", "ddr_gde_init")) {
-          # If year is not 2019, return empty data
-          if(input$year != 2019) {
-            print("Selected year is not 2019, showing no data for municipality variables")
-            return(swiss_map() %>% mutate(!!sym(input$variable) := NA))
-          }
-          
-          # Continue with 2019 data
-          print("Using 2019 data for municipality variables")
-          
-          # Filter to 2019 data
-          year_data <- data_clean %>%
-            filter(jahr == 2019)
-          
-          # Check if there is data for 2019
-          if(sum(!is.na(year_data[[input$variable]])) == 0) {
-            print("No data for 2019, showing empty map")
-            return(swiss_map() %>% mutate(!!sym(input$variable) := NA))
-          }
-          
-          # Convert "." to NA and then to numeric
-          year_data[[input$variable]] <- ifelse(year_data[[input$variable]] == "." | 
-                                           year_data[[input$variable]] == "", 
-                                           NA, 
-                                           year_data[[input$variable]])
-          
-          # Convert to numeric
-          year_data[[input$variable]] <- suppressWarnings(as.numeric(as.character(year_data[[input$variable]])))
-          
-          # Debug info about the 2019 data
-          print(paste("Number of rows for 2019:", nrow(year_data)))
-          print(paste("Number of non-NA values for 2019:", sum(!is.na(year_data[[input$variable]]))))
-          
-          # Select kanton and variable column
-          year_data <- year_data %>% select(kanton, !!sym(input$variable))
-          
-          # Join with map data
-          map_with_data <- swiss_map() %>%
-            left_join(year_data, by = c("kanton_abbr" = "kanton"))
-          
-          # Final debug info
-          print(paste("Final map data created with", nrow(map_with_data), "features"))
-          
-          return(map_with_data)
-        }
-        
-        # For other municipality variables (policy, polity, politics), do normal processing
-        # Convert "." to NA and then to numeric
-        data_clean[[input$variable]] <- ifelse(data_clean[[input$variable]] == "." | 
-                                             data_clean[[input$variable]] == "", 
-                                             NA, 
-                                             data_clean[[input$variable]])
-        
-        # Convert to numeric
-        data_clean[[input$variable]] <- suppressWarnings(as.numeric(as.character(data_clean[[input$variable]])))
-      }
-      
-      # Special handling for parl_election variable
-      if(input$variable == "parl_election") {
-        print("Special handling for parl_election variable")
-        
-        # Find the parl_election column (could be named parl_election...97 or similar)
-        parl_election_col <- names(data_clean)[grep("parl_election", names(data_clean))]
-        
-        if(length(parl_election_col) > 0) {
-          print(paste("Found parl_election column:", parl_election_col[1]))
-          
-          # Create a clean parl_election column
-          data_clean$parl_election <- ifelse(data_clean[[parl_election_col[1]]] == "." | 
-                                           data_clean[[parl_election_col[1]]] == "", 
-                                           NA, 
-                                           data_clean[[parl_election_col[1]]])
-          
-          # Convert to numeric
-          data_clean$parl_election <- suppressWarnings(as.numeric(as.character(data_clean$parl_election)))
-          
-          # Print debug info
-          print(paste("Number of rows in data:", nrow(data_clean)))
-          non_na_values <- data_clean$parl_election[!is.na(data_clean$parl_election)]
-          print(paste("Number of non-NA values:", length(non_na_values)))
-          if(length(non_na_values) > 0) {
-            print(paste("Sample values:", paste(head(non_na_values), collapse=", ")))
-          }
-        } else {
-          print("Could not find parl_election column in the data")
-          return(swiss_map() %>% mutate(parl_election = NA))
-        }
-      }
-      
-      # Special handling for reg_election variable
-      if(input$variable == "reg_election") {
-        print("Special handling for reg_election variable")
-        
-        # Find the reg_election column
-        reg_election_col <- names(data_clean)[grep("reg_election", names(data_clean))]
-        
-        if(length(reg_election_col) > 0) {
-          print(paste("Found reg_election column:", reg_election_col[1]))
-          
-          # Create a clean reg_election column
-          data_clean$reg_election <- ifelse(data_clean[[reg_election_col[1]]] == "." | 
-                                          data_clean[[reg_election_col[1]]] == "", 
-                                          NA, 
-                                          data_clean[[reg_election_col[1]]])
-          
-          # Convert to numeric
-          data_clean$reg_election <- suppressWarnings(as.numeric(as.character(data_clean$reg_election)))
-        } else {
-          print("Could not find reg_election column in the data")
-          return(swiss_map() %>% mutate(reg_election = NA))
-        }
-      }
-      
       # Check if variable exists in the dataset
-      if(!input$variable %in% names(data_clean)) {
+      if(!input$variable %in% names(data())) {
         print(paste("Variable", input$variable, "not found in dataset"))
         # Return empty map data
         return(swiss_map() %>% mutate(!!sym(input$variable) := NA))
       }
+      
+      # Create a clean version of the data with proper type conversion
+      data_clean <- data()
       
       # List of variables that need special numeric handling
       numeric_vars <- c(
@@ -472,21 +353,39 @@ canton_map_server <- function(id, data) {
         # Government election variables
         "reg_election", "reg_konk", "konk_2", "reg_left", "reg_cent", 
         "reg_right", "reg_kath", "reg_gruene", "spann", "wett_reg_se", "wett_reg2_se", 
-        "max_sitzzahl_reg", "n_bestplatzierte_sitzzahl_reg", "g", "o", "ieo", "balance",
-        
-        # Municipality variables
-        "ddr_gde_obl", "ddr_gde_fak", "ddr_gde_init", "dez_policy", "dez_polity", "dez_politics"
+        "max_sitzzahl_reg", "n_bestplatzierte_sitzzahl_reg", "g", "o", "ieo", "balance"
       )
       
       # Clean all numeric variables
       for (var in numeric_vars) {
-        if (var %in% names(data_clean) && var != "parl_election" && var != "reg_election") {
-          # Already handled parl_election and reg_election above
+        if (var %in% names(data_clean)) {
           # Convert "." to NA and then to numeric
           data_clean[[var]] <- ifelse(data_clean[[var]] == "." | data_clean[[var]] == "", 
                                      NA, 
                                      data_clean[[var]])
           data_clean[[var]] <- suppressWarnings(as.numeric(as.character(data_clean[[var]])))
+          
+          # Debug info for specific variables
+          if (var %in% dd_indices) {
+            print(paste("Variable", var, "after cleaning:"))
+            print(paste("  Number of NAs:", sum(is.na(data_clean[[var]]))))
+            
+            # Check for the selected year
+            year_data_count <- sum(!is.na(data_clean[[var]][data_clean$jahr == input$year]))
+            print(paste("  Number of values for year", input$year, ":", year_data_count))
+            
+            # Check for 2018 specifically
+            if (input$year != 2018) {
+              year_2018_count <- sum(!is.na(data_clean[[var]][data_clean$jahr == 2018]))
+              print(paste("  Number of values for year 2018:", year_2018_count))
+            }
+            
+            # Provide a few sample values after conversion
+            sample_values <- data_clean[[var]][!is.na(data_clean[[var]])]
+            if (length(sample_values) > 0) {
+              print(paste("  Sample values:", paste(head(sample_values, 3), collapse=", ")))
+            }
+          }
         }
       }
       
@@ -526,6 +425,26 @@ canton_map_server <- function(id, data) {
       print(paste("Number of rows in filtered data:", nrow(year_data)))
       print(paste("Number of NAs in variable:", sum(is.na(year_data[[input$variable]]))))
       print(paste("Number of valid values:", sum(!is.na(year_data[[input$variable]]))))
+      
+      # For direct democracy indices, add additional debug info
+      if (input$variable %in% dd_indices) {
+        valid_values <- year_data[[input$variable]][!is.na(year_data[[input$variable]])]
+        if (length(valid_values) > 0) {
+          print(paste("Sample values from filtered data:", paste(head(valid_values, 3), collapse=", ")))
+        }
+        
+        # Check canton matches
+        data_cantons <- sort(unique(year_data$kanton))
+        map_cantons <- sort(unique(swiss_map()$kanton_abbr))
+        print(paste("Cantons in data:", paste(head(data_cantons), collapse=", "), "..."))
+        print(paste("Cantons in map:", paste(head(map_cantons), collapse=", "), "..."))
+        
+        # Check for cantons in data but not in map
+        missing_cantons <- setdiff(data_cantons, map_cantons)
+        if (length(missing_cantons) > 0) {
+          print(paste("Warning: Cantons in data but not in map:", paste(missing_cantons, collapse=", ")))
+        }
+      }
       
       # Join with map data using abbreviations
       map_with_data <- swiss_map() %>%
@@ -656,26 +575,6 @@ canton_map_server <- function(id, data) {
         }
       } else if(input$variable == "max_sitzzahl_parl" || input$variable == "max_sitzzahl_reg") {
         # Number of seats of strongest party: typically small integers
-        distinct_values <- sort(unique(valid_values))
-        if(length(distinct_values) <= 6 && all(distinct_values == round(distinct_values))) {
-          is_discrete <- TRUE
-          discrete_values <- distinct_values
-        } else {
-          is_discrete <- FALSE
-        }
-      } else if(input$variable == "ddr_gde_obl" || input$variable == "ddr_gde_fak" || 
-                input$variable == "ddr_gde_init") {
-        # Municipality direct democracy variables: Check if they have <= 6 distinct integer values
-        distinct_values <- sort(unique(valid_values))
-        if(length(distinct_values) <= 6 && all(distinct_values == round(distinct_values))) {
-          is_discrete <- TRUE
-          discrete_values <- distinct_values
-        } else {
-          is_discrete <- FALSE
-        }
-      } else if(input$variable == "dez_policy" || input$variable == "dez_polity" || 
-                input$variable == "dez_politics") {
-        # Municipality decentralization variables: Check if they have <= 6 distinct integer values
         distinct_values <- sort(unique(valid_values))
         if(length(distinct_values) <= 6 && all(distinct_values == round(distinct_values))) {
           is_discrete <- TRUE
