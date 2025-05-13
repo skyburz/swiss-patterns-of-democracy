@@ -158,9 +158,7 @@ prepare_election_data <- function(data, year, variable_type = "parlament_sitze")
   if(variable_type %in% c("reg_konk", "konk_2", "reg_left", "reg_cent", "reg_right", "reg_kath", "reg_gruene",
                           "parl_left", "parl_cent", "parl_right", "parl_kath", "parl_gruene",
                           "wett_parl_se", "wett_parl2_vo", "n_bestplatzierte_sitzzahl_parl", 
-                          "volatilitaet_se_election", "volatilitaet_se_year", "volatilitaet_vo", "gallagher",
-                          "spann", "wett_reg_se", "wett_reg2_se", "max_sitzzahl_reg", "n_bestplatzierte_sitzzahl_reg",
-                          "g", "o", "ieo", "balance")) {
+                          "volatilitaet_se_election", "volatilitaet_se_year", "volatilitaet_vo", "gallagher")) {
     # Special handling for n_bestplatzierte_sitzzahl_parl
     if(variable_type == "n_bestplatzierte_sitzzahl_parl") {
       gov_data <- data %>%
@@ -191,42 +189,6 @@ prepare_election_data <- function(data, year, variable_type = "parlament_sitze")
           value = ifelse(gallagher == ".", NA, gallagher),
           # Convert to numeric, need precision for this index
           value = as.numeric(value),
-          # For compatibility with existing code
-          parl_sitze_partei = value
-        ) %>%
-        filter(!is.na(value))  # Remove any NA values
-      return(gov_data)
-    }
-    # Special handling for n_bestplatzierte_sitzzahl_reg - counting parties for government
-    else if(variable_type == "n_bestplatzierte_sitzzahl_reg") {
-      gov_data <- data %>%
-        filter(!!sym(year_col) == year) %>%
-        select(kantonnr, n_bestplatzierte_sitzzahl_reg) %>%
-        mutate(
-          canton_abbrev = sapply(kantonnr, get_canton_abbr),
-          canton_name = sapply(canton_abbrev, function(abbr) get_canton_name(abbr, "de")),
-          # Convert "." to NA
-          value = ifelse(n_bestplatzierte_sitzzahl_reg == ".", NA, n_bestplatzierte_sitzzahl_reg),
-          # Convert to numeric and round to integer - this should be a count of parties
-          value = round(as.numeric(value)),
-          # For compatibility with existing code
-          parl_sitze_partei = value
-        ) %>%
-        filter(!is.na(value))  # Remove any NA values
-      return(gov_data)
-    }
-    # Special handling for max_sitzzahl_reg - seats for government
-    else if(variable_type == "max_sitzzahl_reg") {
-      gov_data <- data %>%
-        filter(!!sym(year_col) == year) %>%
-        select(kantonnr, max_sitzzahl_reg) %>%
-        mutate(
-          canton_abbrev = sapply(kantonnr, get_canton_abbr),
-          canton_name = sapply(canton_abbrev, function(abbr) get_canton_name(abbr, "de")),
-          # Convert "." to NA
-          value = ifelse(max_sitzzahl_reg == ".", NA, max_sitzzahl_reg),
-          # Convert to numeric and round to integer - this should be a count of seats
-          value = round(as.numeric(value)),
           # For compatibility with existing code
           parl_sitze_partei = value
         ) %>%
@@ -484,9 +446,6 @@ elections_ui <- function(id) {
 #' @return A server function
 elections_server <- function(id, selected_data) {
   moduleServer(id, function(input, output, session) {
-    
-    # Standardized color for all non-party visualizations
-    standard_color <- "#1b6d80"  # Primary color from the theme
     
     # Define party colors at the top level of the server function
     party_colors <- c(
@@ -819,173 +778,171 @@ elections_server <- function(id, selected_data) {
           plot_title <- "Durchschnittlicher Rae-Index der Parteienfraktionalisierung über die Zeit"
           y_axis_title <- "Rae-Index"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#5EA55E"  # Green
         } else if (var_name == "partfrakt") {
           plot_title <- "Durchschnittliche effektive Parteienzahl über die Zeit"
           y_axis_title <- "Effektive Parteienzahl"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4646B4"  # Blue
         } else if (var_name == "parl_party") {
           plot_title <- "Durchschnittliche Anzahl der Parlamentsparteien über die Zeit"
           y_axis_title <- "Anzahl Parteien"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#D66E1D"  # Orange
         } else if (var_name == "max_sitzzahl_parl") {
           plot_title <- "Durchschnittliche Anzahl der Sitze der stärksten Partei über die Zeit"
           y_axis_title <- "Anzahl Sitze"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#365436"  # Dark green
         } else if (var_name == "reg_konk") {
           plot_title <- "Durchschnittliche summierte Wähleranteile der Regierungsparteien über die Zeit"
           y_axis_title <- "Wähleranteile (%)"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#C4C446"  # Yellow-green
         } else if (var_name == "konk_2") {
           plot_title <- "Durchschnittliche Konkordanz über die Zeit"
           y_axis_title <- "Konkordanz"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#AD5E8E"  # Purple
         } else if (var_name == "reg_left") {
           plot_title <- "Durchschnittliche Stärke des linken Lagers über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#E85D63"  # Red - keeping political color
+          color <- "#E85D63"  # Red
         } else if (var_name == "reg_cent") {
           plot_title <- "Durchschnittliche Stärke des Mitte-Lagers über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#D66E1D"  # Orange - keeping political color
+          color <- "#D66E1D"  # Orange
         } else if (var_name == "reg_right") {
           plot_title <- "Durchschnittliche Stärke des rechten Lagers über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#365436"  # Dark green - keeping political color
+          color <- "#365436"  # Dark green
         } else if (var_name == "reg_kath") {
           plot_title <- "Durchschnittliche Stärke des katholischen Lagers über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#4646B4"  # Blue - keeping political color
+          color <- "#4646B4"  # Blue
         } else if (var_name == "reg_gruene") {
           plot_title <- "Durchschnittliche Stärke des grünen Lagers über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#5EA55E"  # Green - keeping political color
+          color <- "#5EA55E"  # Green
         } else if (var_name == "parl_left") {
           plot_title <- "Durchschnittliche Stärke des linken Lagers im Parlament über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#E85D63"  # Red - keeping political color
+          color <- "#E85D63"  # Red
         } else if (var_name == "parl_cent") {
           plot_title <- "Durchschnittliche Stärke des Mitte-Lagers im Parlament über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#D66E1D"  # Orange - keeping political color
+          color <- "#D66E1D"  # Orange
         } else if (var_name == "parl_right") {
           plot_title <- "Durchschnittliche Stärke des rechten Lagers im Parlament über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#365436"  # Dark green - keeping political color
+          color <- "#365436"  # Dark green
         } else if (var_name == "parl_kath") {
           plot_title <- "Durchschnittliche Stärke des katholischen Lagers im Parlament über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#4646B4"  # Blue - keeping political color
+          color <- "#4646B4"  # Blue
         } else if (var_name == "parl_gruene") {
           plot_title <- "Durchschnittliche Stärke des grünen Lagers im Parlament über die Zeit"
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#5EA55E"  # Green - keeping political color
+          color <- "#5EA55E"  # Green
         } else if (var_name == "wett_parl_se") {
           plot_title <- "Durchschnittliches Restwählerpotential über die Zeit"
           y_axis_title <- "100% - Wähleranteil stärkste Partei"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#9B3C3C"  # Dark red
         } else if (var_name == "wett_parl2_vo") {
           plot_title <- "Durchschnittlicher Unterschied zwischen größter und zweitgrößter Partei über die Zeit"
           y_axis_title <- "Unterschied"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#DEBA3D"  # Yellow
         } else if (var_name == "n_bestplatzierte_sitzzahl_parl") {
           plot_title <- "Durchschnittliche Anzahl der stärksten/bestplatzierten Parteien über die Zeit"
           y_axis_title <- "Anzahl Parteien"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4DB3B3"  # Turquoise
         } else if (var_name == "volatilitaet_se_election") {
           plot_title <- "Durchschnittliche parlamentarische Volatilität (Sitzanteile) über die Zeit"
           y_axis_title <- "Volatilität"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#D459D4"  # Purple
         } else if (var_name == "volatilitaet_se_year") {
           plot_title <- "Durchschnittliche standardisierte parlamentarische Volatilität über die Zeit"
           y_axis_title <- "Volatilität (standardisiert)"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#878787"  # Grey
         } else if (var_name == "volatilitaet_vo") {
           plot_title <- "Durchschnittliche Wählervolatilität über die Zeit"
           y_axis_title <- "Wählervolatilität"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#4798E8"  # Light blue
         } else if (var_name == "gallagher") {
           plot_title <- "Durchschnittliche effektive Disproportionalität des Wahlsystems über die Zeit"
           y_axis_title <- "Gallagher-Index"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#A65A42"  # Brown
         } else if (var_name == "spann") {
           plot_title <- "Durchschnittliche parteipolitische Spannweite der Regierungskoalition über die Zeit"
           y_axis_title <- "Spannweite"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#A65A42"  # Brown
         } else if (var_name == "wett_reg_se") {
           plot_title <- "Durchschnittliches Regierungsrestwählerpotential über die Zeit"
           y_axis_title <- "100% - Sitzanteil stärkste Partei"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#9B3C3C"  # Dark red
         } else if (var_name == "wett_reg2_se") {
           plot_title <- "Durchschnittlicher Unterschied zwischen größter und zweitgrößter Regierungspartei über die Zeit"
           y_axis_title <- "Unterschied"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#DEBA3D"  # Yellow
         } else if (var_name == "max_sitzzahl_reg") {
           plot_title <- "Durchschnittliche Anzahl der Sitze der stärksten Regierungspartei über die Zeit"
           y_axis_title <- "Anzahl Sitze"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#365436"  # Dark green
         } else if (var_name == "n_bestplatzierte_sitzzahl_reg") {
           plot_title <- "Durchschnittliche Anzahl stärkster/bestplatzierter Regierungsparteien über die Zeit"
           y_axis_title <- "Anzahl Parteien"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4DB3B3"  # Turquoise
         } else if (var_name == "g") {
           plot_title <- "Durchschnittliche Größe der typischen Regierungspartei über die Zeit"
           y_axis_title <- "Größe"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#458B74"  # Aquamarine
         } else if (var_name == "o") {
           plot_title <- "Durchschnittliche Größe der typischen Oppositionspartei über die Zeit"
           y_axis_title <- "Größe"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#CD5555"  # Indian red
         } else if (var_name == "ieo") {
           plot_title <- "Durchschnittlicher Index of Effective Opposition über die Zeit"
           y_axis_title <- "IEO"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#8B6508"  # Dark goldenrod
         } else if (var_name == "balance") {
           plot_title <- "Durchschnittlicher Index of Competitiveness über die Zeit"
           y_axis_title <- "Balance"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#9370DB"  # Medium purple
         } else {
           plot_title <- paste("Durchschnittlicher", var_name, "über die Zeit")
           y_axis_title <- var_name
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4646B4"  # Default blue
         }
         
         # Check if we're showing specific cantons
-        if (!is.null(selected_cantons) && 
-            (input$election_type == "parliament" || 
-             (input$election_type == "government" && var_name %in% c("spann", "wett_reg_se", "wett_reg2_se", "max_sitzzahl_reg", "n_bestplatzierte_sitzzahl_reg", "g", "o", "ieo", "balance")))) {
+        if (!is.null(selected_cantons) && input$election_type == "parliament") {
           # Show individual canton values when specific cantons are selected
           canton_data <- data %>%
             # Convert "." to NA and then to numeric
@@ -1204,8 +1161,8 @@ elections_server <- function(id, selected_data) {
             y = avg_turnout,
             type = "scatter",
             mode = "lines+markers",
-            line = list(color = standard_color, width = 2),  # Use standard color for turnout visualization
-            marker = list(color = standard_color, size = 8),
+            line = list(color = "#E85D63", width = 2),  # Red color for turnout
+            marker = list(color = "#E85D63", size = 8),
             hoverinfo = "text",
             text = paste("Jahr:", years, 
                          "<br>Durchschnittliche Wahlbeteiligung:", round(avg_turnout, 1), "%",
@@ -1325,8 +1282,8 @@ elections_server <- function(id, selected_data) {
             y = avg_terms,
             type = "scatter",
             mode = "lines+markers",
-            line = list(color = standard_color, width = 2),  # Use standard color for individual metrics
-            marker = list(color = standard_color, size = 8),
+            line = list(color = "#4646B4", width = 2),
+            marker = list(color = "#4646B4", size = 8),
             hoverinfo = "text",
             text = paste("Jahr:", years, 
                          "<br>Durchschnittliche Amtsdauer:", round(avg_terms, 1), "Jahre",
@@ -1456,8 +1413,8 @@ elections_server <- function(id, selected_data) {
             y = counts,
             type = "scatter",
             mode = "lines+markers",
-            line = list(color = standard_color, width = 2),  # Use standard color for turnout visualization
-            marker = list(color = standard_color, size = 8),
+            line = list(color = "#4646B4", width = 2),
+            marker = list(color = "#4646B4", size = 8),
           hoverinfo = "text",
             text = paste("Jahr:", years, "<br>Anzahl Wahlen:", counts)
         ) %>%
@@ -1576,8 +1533,8 @@ elections_server <- function(id, selected_data) {
             y = counts,
             type = "scatter",
             mode = "lines+markers",
-            line = list(color = standard_color, width = 2),  # Use standard color for government elections
-            marker = list(color = standard_color, size = 8),
+            line = list(color = "#D66E1D", width = 2),  # Orange color for government elections
+            marker = list(color = "#D66E1D", size = 8),
             hoverinfo = "text",
             text = paste("Jahr:", years, "<br>Anzahl Wahlen:", counts)
           ) %>%
@@ -1776,224 +1733,224 @@ elections_server <- function(id, selected_data) {
           plot_title <- paste("Rae-Index der Parteienfraktionalisierung nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Rae-Index"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#5EA55E"  # Green
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "partfrakt") {
           plot_title <- paste("Effektive Parteienzahl nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Effektive Parteienzahl"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4646B4"  # Blue
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "parl_party") {
           plot_title <- paste("Anzahl der Parlamentsparteien nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Anzahl Parteien"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#D66E1D"  # Orange
           value_column <- "value"
           decimal_places <- 0
         } else if (var_name == "max_sitzzahl_parl") {
           plot_title <- paste("Sitze der stärksten Partei nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Anzahl Sitze"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#365436"  # Dark green
           value_column <- "value"
           decimal_places <- 0
         } else if (var_name == "reg_konk") {
           plot_title <- paste("Summierte Wähleranteile der Regierungsparteien nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Wähleranteile (%)"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#C4C446"  # Yellow-green
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "konk_2") {
           plot_title <- paste("Konkordanz nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Konkordanz"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#AD5E8E"  # Purple
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "reg_left") {
           plot_title <- paste("Stärke des linken Lagers nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#E85D63"  # Red - keeping political color
+          color <- "#E85D63"  # Red
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "reg_cent") {
           plot_title <- paste("Stärke des Mitte-Lagers nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#D66E1D"  # Orange - keeping political color
+          color <- "#D66E1D"  # Orange
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "reg_right") {
           plot_title <- paste("Stärke des rechten Lagers nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#365436"  # Dark green - keeping political color
+          color <- "#365436"  # Dark green
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "reg_kath") {
           plot_title <- paste("Stärke des katholischen Lagers nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#4646B4"  # Blue - keeping political color
+          color <- "#4646B4"  # Blue
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "reg_gruene") {
           plot_title <- paste("Stärke des grünen Lagers nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#5EA55E"  # Green - keeping political color
+          color <- "#5EA55E"  # Green
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "parl_left") {
           plot_title <- paste("Stärke des linken Lagers im Parlament nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#E85D63"  # Red - keeping political color
+          color <- "#E85D63"  # Red
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "parl_cent") {
           plot_title <- paste("Stärke des Mitte-Lagers im Parlament nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#D66E1D"  # Orange - keeping political color
+          color <- "#D66E1D"  # Orange
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "parl_right") {
           plot_title <- paste("Stärke des rechten Lagers im Parlament nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#365436"  # Dark green - keeping political color
+          color <- "#365436"  # Dark green
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "parl_kath") {
           plot_title <- paste("Stärke des katholischen Lagers im Parlament nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#4646B4"  # Blue - keeping political color
+          color <- "#4646B4"  # Blue
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "parl_gruene") {
           plot_title <- paste("Stärke des grünen Lagers im Parlament nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Stärke"
           value_suffix <- ""
-          color <- "#5EA55E"  # Green - keeping political color
+          color <- "#5EA55E"  # Green
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "wett_parl_se") {
           plot_title <- paste("Restwählerpotential nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "100% - Wähleranteil stärkste Partei"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#9B3C3C"  # Dark red
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "wett_parl2_vo") {
           plot_title <- paste("Unterschied zwischen größter und zweitgrößter Partei nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Unterschied"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#DEBA3D"  # Yellow
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "n_bestplatzierte_sitzzahl_parl") {
           plot_title <- paste("Anzahl der stärksten/bestplatzierten Parteien nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Anzahl Parteien"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4DB3B3"  # Turquoise
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "volatilitaet_se_election") {
           plot_title <- paste("Parl. Volatilität (Sitzanteile) nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Volatilität"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#D459D4"  # Purple
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "volatilitaet_se_year") {
           plot_title <- paste("Standardisierte parl. Volatilität nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Volatilität (standardisiert)"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#878787"  # Grey
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "volatilitaet_vo") {
           plot_title <- paste("Wählervolatilität nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Wählervolatilität"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#4798E8"  # Light blue
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "gallagher") {
           plot_title <- paste("Effektive Disproportionalität des Wahlsystems nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Gallagher-Index"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#A65A42"  # Brown
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "spann") {
           plot_title <- paste("Parteipolitische Spannweite der Regierungskoalition nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Spannweite"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#A65A42"  # Brown
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "wett_reg_se") {
           plot_title <- paste("Regierungsrestwählerpotential nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "100% - Sitzanteil stärkste Partei"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#9B3C3C"  # Dark red
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "wett_reg2_se") {
           plot_title <- paste("Unterschied zwischen größter und zweitgrößter Regierungspartei nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Unterschied"
           value_suffix <- "%"
-          color <- standard_color  # Standardized color
+          color <- "#DEBA3D"  # Yellow
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "max_sitzzahl_reg") {
           plot_title <- paste("Anzahl der Sitze der stärksten Regierungspartei nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Anzahl Sitze"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#365436"  # Dark green
           value_column <- "value"
           decimal_places <- 0
         } else if (var_name == "n_bestplatzierte_sitzzahl_reg") {
           plot_title <- paste("Anzahl stärkster/bestplatzierter Regierungsparteien nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Anzahl Parteien"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#4DB3B3"  # Turquoise
           value_column <- "value"
           decimal_places <- 0
         } else if (var_name == "g") {
           plot_title <- paste("Größe der typischen Regierungspartei nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Größe"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#458B74"  # Aquamarine
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "o") {
           plot_title <- paste("Größe der typischen Oppositionspartei nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Größe"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#CD5555"  # Indian red
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "ieo") {
           plot_title <- paste("Index of Effective Opposition nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "IEO"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#8B6508"  # Dark goldenrod
           value_column <- "value"
           decimal_places <- 2
         } else if (var_name == "balance") {
           plot_title <- paste("Index of Competitiveness nach Kanton im Jahr", input$selected_year)
           y_axis_title <- "Balance"
           value_suffix <- ""
-          color <- standard_color  # Standardized color
+          color <- "#9370DB"  # Medium purple
           value_column <- "value"
           decimal_places <- 2
         }
@@ -2015,9 +1972,9 @@ elections_server <- function(id, selected_data) {
         p <- plot_ly(
           data = plot_data,
           x = ~canton_abbrev,
-          y = ~get(value_column),  # Use the column specified by value_column
+          y = ~value,
           type = "bar",
-          text = ~paste(canton_name, "<br>", y_axis_title, ": ", format_value(get(value_column)), value_suffix),
+          text = ~paste(canton_name, "<br>", y_axis_title, ": ", format_value(value), value_suffix),
           hoverinfo = "text",
           marker = list(color = color)
         ) %>%
@@ -2053,7 +2010,7 @@ elections_server <- function(id, selected_data) {
           type = "bar",
           text = ~paste(canton_name, "<br>Wahlbeteiligung:", round(turnout_e, 1), "%"),
           hoverinfo = "text",
-          marker = list(color = standard_color)  # Use standard color for turnout visualization
+          marker = list(color = "#E85D63")  # Red color for turnout
         ) %>%
           layout(
             title = paste("Wahlbeteiligung bei Parlamentswahlen nach Kanton im Jahr", input$selected_year),
@@ -2087,7 +2044,7 @@ elections_server <- function(id, selected_data) {
           type = "bar",
           text = ~paste(canton_name, "<br>Amtsdauer:", parlegisl, "Jahre"),
           hoverinfo = "text",
-          marker = list(color = standard_color)  # Use standard color for individual metrics
+          marker = list(color = "#4646B4")
         ) %>%
           layout(
             title = paste("Amtsdauer des Parlaments nach Kanton im Jahr", input$selected_year),
@@ -2144,7 +2101,7 @@ elections_server <- function(id, selected_data) {
           text = ~canton_name,  # Only show canton name in hover text
           hoverinfo = "text",
           marker = list(
-            color = ~ifelse(parl_sitze_partei == 1, standard_color, "#E0E0E0")  # Use standard_color for elections, light gray for no elections
+            color = ~ifelse(parl_sitze_partei == 1, "#1b6d80", "#E0E0E0")  # Use #1b6d80 for elections, light gray for no elections
           )
         ) %>%
           layout(
@@ -2222,7 +2179,7 @@ elections_server <- function(id, selected_data) {
           text = ~canton_name,  # Only show canton name in hover text
           hoverinfo = "text",
           marker = list(
-            color = ~ifelse(parl_sitze_partei == 1, standard_color, "#E0E0E0")  # Use standard_color for elections, light gray for no elections
+            color = ~ifelse(parl_sitze_partei == 1, "#1b6d80", "#E0E0E0")  # Use #1b6d80 for elections, light gray for no elections
           )
         ) %>%
           layout(
@@ -2337,7 +2294,7 @@ elections_server <- function(id, selected_data) {
           text = ~paste(canton_name, "<br>Wert:", round(parl_sitze_partei, decimal_places), suffix),
           hoverinfo = "text",
           marker = list(
-            color = standard_color  # Use standardized color for all bars
+            color = "#1b6d80"  # Use consistent color #1b6d80 for all bars
           )
         ) %>%
           layout(
@@ -2467,5 +2424,4 @@ elections_server <- function(id, selected_data) {
       cat("Statistische Zusammenfassung für Wahlen (Implementierung folgt)")
     })
   })
-} #   U p d a t e d   m o d u l e   t o   s h o w   c a n t o n - s p e c i f i c   v a l u e s   f o r   g o v e r n m e n t   v a r i a b l e s   i n   t i m e   t r e n d  
- 
+} 

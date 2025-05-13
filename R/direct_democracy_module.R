@@ -353,12 +353,31 @@ direct_democracy_server <- function(id, full_dataset) {
       # Get unique cantons
       cantons <- sort(unique(data$kanton))
       
+      # Convert canton abbreviations to full names using canton_reference
+      # First source the canton reference if not already done
+      source("R/canton_reference.R")
+      
+      # Create a mapping of abbreviations to full German names
+      canton_full_names <- sapply(cantons, function(abbr) {
+        name <- get_canton_name(abbr, "de")
+        if(is.na(name)) return(abbr) # If not found, keep the original value
+        return(name)
+      })
+      
+      # Sort by full German names
+      sorted_indices <- order(canton_full_names)
+      sorted_cantons <- cantons[sorted_indices]
+      sorted_names <- canton_full_names[sorted_indices]
+      
+      # Create named vector for choices
+      choices <- setNames(sorted_cantons, sorted_names)
+      
       # Update the canton selection checkbox group
       updateCheckboxGroupInput(
         session,
         "canton_select",
-        choices = cantons,
-        selected = cantons[1:3]  # Select first three by default
+        choices = choices,
+        selected = choices[1:3]  # Select first three by default
       )
       
       # Get min and max years to set slider ranges
@@ -442,6 +461,41 @@ direct_democracy_server <- function(id, full_dataset) {
       }
     })
     
+    # Function to get consistent canton colors
+    get_canton_colors <- function() {
+      # Define custom colors for each canton
+      canton_colors <- c(
+        "ZH" = "#0038A8", # Blue
+        "BE" = "#E30613", # Red
+        "LU" = "#78B7E7", # Light Blue
+        "UR" = "#FFCC00", # Yellow
+        "SZ" = "#C8102E", # Dark Red
+        "OW" = "#9D2235", # Crimson
+        "NW" = "#7E2B3F", # Burgundy
+        "GL" = "#000000", # Black
+        "ZG" = "#002F6C", # Navy Blue
+        "FR" = "#7F7F7F", # Gray
+        "SO" = "#964B00", # Brown
+        "BS" = "#001E62", # Dark Blue
+        "BL" = "#E50075", # Pink/Magenta
+        "SH" = "#FFD700", # Gold
+        "AR" = "#C0C0C0", # Silver Gray
+        "AI" = "#404040", # Dark Gray
+        "SG" = "#009A44", # Green
+        "GR" = "#BBBBBB", # Light Gray
+        "AG" = "#008080", # Teal/Turquoise
+        "TG" = "#006400", # Dark Green
+        "TI" = "#FF6600", # Orange
+        "VD" = "#89CF00", # Lime Green
+        "VS" = "#9B111E", # Ruby Red
+        "NE" = "#046A38", # Emerald Green
+        "GE" = "#DA9100", # Yellow-Gold
+        "JU" = "#6A0DAD"  # Purple
+      )
+      
+      return(canton_colors)
+    }
+    
     # Time trend plot
     output$time_trend_plot <- renderPlotly({
       # Add explicit dependencies on inputs to ensure reactivity
@@ -516,8 +570,8 @@ direct_democracy_server <- function(id, full_dataset) {
           y = ~value,
           type = 'scatter',
           mode = 'lines+markers',
-          line = list(color = '#2b6cb0', width = 2),
-          marker = list(color = '#2b6cb0', size = 8),
+          line = list(color = '#1b6d80', width = 2),
+          marker = list(color = '#1b6d80', size = 8),
           hoverinfo = 'text',
           text = ~hover_text
         ) %>%
@@ -574,6 +628,9 @@ direct_democracy_server <- function(id, full_dataset) {
         total_available <- sum(!is.na(data[[selected_var]]))
         data_completeness <- round(100 * total_available / total_possible, 1)
         
+        # Get canton colors
+        canton_colors <- get_canton_colors()
+        
         # Create plotly plot
         p <- plot_ly() %>%
           layout(
@@ -598,6 +655,10 @@ direct_democracy_server <- function(id, full_dataset) {
         for (canton in unique(plot_data$kanton)) {
           canton_data <- plot_data %>% filter(kanton == canton)
           
+          # Get color for this canton
+          canton_color <- canton_colors[canton]
+          if (is.na(canton_color)) canton_color = "#808080"  # Default gray if no color found
+          
           # Add trace for this canton
           p <- p %>% add_trace(
             data = canton_data,
@@ -606,6 +667,8 @@ direct_democracy_server <- function(id, full_dataset) {
             name = canton,
             type = "scatter",
             mode = "lines+markers",
+            line = list(color = canton_color, width = 2),
+            marker = list(color = canton_color, size = 8),
             hoverinfo = "text",
             text = ~paste(
               canton, "<br>Jahr:", jahr, 
@@ -684,7 +747,7 @@ direct_democracy_server <- function(id, full_dataset) {
       
       # Create the plot
       p <- ggplot(canton_avg, aes(x = reorder(kanton, avg_value), y = avg_value)) +
-        geom_bar(stat = "identity", fill = "#2b6cb0") +
+        geom_bar(stat = "identity", fill = "#1b6d80") +  # Use consistent color #1b6d80 for all bars
         coord_flip() +
         labs(
           title = paste("Kantonsvergleich", var_label),

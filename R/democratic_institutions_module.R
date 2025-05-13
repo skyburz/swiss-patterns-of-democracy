@@ -217,6 +217,41 @@ democratic_institutions_ui <- function(id) {
 democratic_institutions_server <- function(id, selected_data) {
   moduleServer(id, function(input, output, session) {
     
+    # Function to get consistent canton colors
+    get_canton_colors <- function() {
+      # Define custom colors for each canton
+      canton_colors <- c(
+        "ZH" = "#0038A8", # Blue
+        "BE" = "#E30613", # Red
+        "LU" = "#78B7E7", # Light Blue
+        "UR" = "#FFCC00", # Yellow
+        "SZ" = "#C8102E", # Dark Red
+        "OW" = "#9D2235", # Crimson
+        "NW" = "#7E2B3F", # Burgundy
+        "GL" = "#000000", # Black
+        "ZG" = "#002F6C", # Navy Blue
+        "FR" = "#7F7F7F", # Gray
+        "SO" = "#964B00", # Brown
+        "BS" = "#001E62", # Dark Blue
+        "BL" = "#E50075", # Pink/Magenta
+        "SH" = "#FFD700", # Gold
+        "AR" = "#C0C0C0", # Silver Gray
+        "AI" = "#404040", # Dark Gray
+        "SG" = "#009A44", # Green
+        "GR" = "#BBBBBB", # Light Gray
+        "AG" = "#008080", # Teal/Turquoise
+        "TG" = "#006400", # Dark Green
+        "TI" = "#FF6600", # Orange
+        "VD" = "#89CF00", # Lime Green
+        "VS" = "#9B111E", # Ruby Red
+        "NE" = "#046A38", # Emerald Green
+        "GE" = "#DA9100", # Yellow-Gold
+        "JU" = "#6A0DAD"  # Purple
+      )
+      
+      return(canton_colors)
+    }
+    
     # Reactive value to store filtered data
     filtered_data <- reactiveVal(NULL)
     
@@ -315,12 +350,31 @@ democratic_institutions_server <- function(id, selected_data) {
         cantons <- sort(unique(data[[canton_col]]))
         print(paste("Available cantons:", paste(cantons, collapse = ", ")))
         
+        # Convert canton abbreviations to full names using canton_reference
+        # First source the canton reference if not already done
+        source("R/canton_reference.R")
+        
+        # Create a mapping of abbreviations to full German names
+        canton_full_names <- sapply(cantons, function(abbr) {
+          name <- get_canton_name(abbr, "de")
+          if(is.na(name)) return(abbr) # If not found, keep the original value
+          return(name)
+        })
+        
+        # Sort by full German names
+        sorted_indices <- order(canton_full_names)
+        sorted_cantons <- cantons[sorted_indices]
+        sorted_names <- canton_full_names[sorted_indices]
+        
+        # Create named vector for choices
+        choices <- setNames(sorted_cantons, sorted_names)
+        
         # Update the canton checkbox group with named choices
         updateCheckboxGroupInput(
           session, 
           "canton_select", 
-          choices = setNames(cantons, cantons),
-          selected = cantons[1:3]  # Pre-select first 3 cantons for convenience
+          choices = choices,
+          selected = choices[1:3]  # Pre-select first 3 cantons for convenience
         )
       }
       
@@ -498,8 +552,8 @@ democratic_institutions_server <- function(id, selected_data) {
         
         # Create plot for all cantons average
         p <- ggplot(plot_data, aes_string(x = year_col, y = "value")) +
-          geom_line(linewidth = 1.2, color = "#2C3E50") +
-          geom_point(color = "#2C3E50") +
+          geom_line(linewidth = 1.2, color = "#1b6d80") +
+          geom_point(color = "#1b6d80") +
           theme_minimal() +
           labs(
             title = plot_title,
@@ -580,6 +634,7 @@ democratic_institutions_server <- function(id, selected_data) {
           geom_line(linewidth = 1.2) +
           geom_point() +
           theme_minimal() +
+          scale_color_manual(values = get_canton_colors()) +  # Use custom canton colors
           labs(
             title = plot_title,
             x = "Jahr",
@@ -743,13 +798,13 @@ democratic_institutions_server <- function(id, selected_data) {
       
       # Create the bar chart with vertical bars
       p <- ggplot(plot_data, aes_string(x = canton_col, y = "value")) +
-        geom_bar(stat = "identity", fill = "#2C3E50") +
+        geom_bar(stat = "identity", fill = "#1b6d80") +  # Use consistent color #1b6d80 for all bars
         # Add value labels on top of each bar with absolute positioning
         geom_text(
           aes(label = label_text, 
               y = value + y_offset),  # Position above the bar with fixed offset
           size = 3.5,    # Text size
-          color = "#2C3E50"  # Text color matching the bars
+          color = "#1b6d80"  # Text color matching the bars
         ) +
         # Add extra space at the top of the plot to accommodate labels
         scale_y_continuous(expand = expansion(mult = c(0, 0.3))) +  # Increased expansion
@@ -908,7 +963,7 @@ democratic_institutions_server <- function(id, selected_data) {
         
         # Create scatter plot
         p <- ggplot(data, aes_string(x = selected_institution, y = correlate)) +
-          geom_point(alpha = 0.7, color = "#2C3E50") +
+          geom_point(alpha = 0.7, color = "#1b6d80") +
           geom_smooth(method = "lm", color = "#E74C3C") +
           theme_minimal() +
           labs(
@@ -967,8 +1022,8 @@ democratic_institutions_server <- function(id, selected_data) {
         
         # Create time trend plot
         p <- ggplot(plot_data, aes_string(x = year_col, y = "value")) +
-          geom_line(linewidth = 1.2, color = "#2C3E50") +
-          geom_point(color = "#2C3E50") +
+          geom_line(linewidth = 1.2, color = "#1b6d80") +
+          geom_point(color = "#1b6d80") +
           theme_minimal() +
           labs(
             title = plot_title,

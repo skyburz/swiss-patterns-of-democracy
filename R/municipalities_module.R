@@ -270,12 +270,31 @@ municipalities_server <- function(id, full_dataset) {
       # Get unique cantons
       cantons <- sort(unique(data$kanton))
       
+      # Convert canton abbreviations to full names using canton_reference
+      # First source the canton reference if not already done
+      source("R/canton_reference.R")
+      
+      # Create a mapping of abbreviations to full German names
+      canton_full_names <- sapply(cantons, function(abbr) {
+        name <- get_canton_name(abbr, "de")
+        if(is.na(name)) return(abbr) # If not found, keep the original value
+        return(name)
+      })
+      
+      # Sort by full German names
+      sorted_indices <- order(canton_full_names)
+      sorted_cantons <- cantons[sorted_indices]
+      sorted_names <- canton_full_names[sorted_indices]
+      
+      # Create named vector for choices
+      choices <- setNames(sorted_cantons, sorted_names)
+      
       # Update the canton selection checkbox group
       updateCheckboxGroupInput(
         session,
         "canton_select",
-        choices = cantons,
-        selected = cantons[1:3]  # Select first three by default
+        choices = choices,
+        selected = choices[1:3]  # Select first three by default
       )
       
       # Get min and max years (for potential future use)
@@ -312,6 +331,41 @@ municipalities_server <- function(id, full_dataset) {
       )
       
       return(labels[var_name])
+    }
+    
+    # Function to get consistent canton colors
+    get_canton_colors <- function() {
+      # Define custom colors for each canton
+      canton_colors <- c(
+        "ZH" = "#0038A8", # Blue
+        "BE" = "#E30613", # Red
+        "LU" = "#78B7E7", # Light Blue
+        "UR" = "#FFCC00", # Yellow
+        "SZ" = "#C8102E", # Dark Red
+        "OW" = "#9D2235", # Crimson
+        "NW" = "#7E2B3F", # Burgundy
+        "GL" = "#000000", # Black
+        "ZG" = "#002F6C", # Navy Blue
+        "FR" = "#7F7F7F", # Gray
+        "SO" = "#964B00", # Brown
+        "BS" = "#001E62", # Dark Blue
+        "BL" = "#E50075", # Pink/Magenta
+        "SH" = "#FFD700", # Gold
+        "AR" = "#C0C0C0", # Silver Gray
+        "AI" = "#404040", # Dark Gray
+        "SG" = "#009A44", # Green
+        "GR" = "#BBBBBB", # Light Gray
+        "AG" = "#008080", # Teal/Turquoise
+        "TG" = "#006400", # Dark Green
+        "TI" = "#FF6600", # Orange
+        "VD" = "#89CF00", # Lime Green
+        "VS" = "#9B111E", # Ruby Red
+        "NE" = "#046A38", # Emerald Green
+        "GE" = "#DA9100", # Yellow-Gold
+        "JU" = "#6A0DAD"  # Purple
+      )
+      
+      return(canton_colors)
     }
     
     # Time trend plot
@@ -370,8 +424,8 @@ municipalities_server <- function(id, full_dataset) {
           y = ~as.numeric(value),
           type = 'scatter',
           mode = 'lines+markers',
-          line = list(color = '#2b6cb0', width = 2),
-          marker = list(color = '#2b6cb0', size = 8),
+          line = list(color = '#1b6d80', width = 2),
+          marker = list(color = '#1b6d80', size = 8),
           hoverinfo = 'text',
           text = ~hover_text
         ) %>%
@@ -418,15 +472,7 @@ municipalities_server <- function(id, full_dataset) {
         data_completeness <- round(100 * total_available / total_possible, 1)
         
         # Define canton colors - using a consistent scheme across the app
-        canton_colors <- c(
-          "ZH" = "#003087", "BE" = "#FF0000", "LU" = "#0066CC", "UR" = "#FFCC00", 
-          "SZ" = "#FF0000", "OW" = "#FFFFFF", "NW" = "#FF0000", "GL" = "#FF0000", 
-          "ZG" = "#0033CC", "FR" = "#000000", "SO" = "#FF0000", "BS" = "#000000", 
-          "BL" = "#FF0000", "SH" = "#000000", "AR" = "#000000", "AI" = "#000000", 
-          "SG" = "#009933", "GR" = "#999999", "AG" = "#000000", "TG" = "#009933", 
-          "TI" = "#FF0000", "VD" = "#006600", "VS" = "#FF0000", "NE" = "#009900", 
-          "GE" = "#CC0000", "JU" = "#FF0000"
-        )
+        canton_colors <- get_canton_colors()
         
         p <- plot_ly() %>%
           layout(
@@ -451,12 +497,10 @@ municipalities_server <- function(id, full_dataset) {
         for (canton in unique(plot_data$kanton)) {
           canton_data <- plot_data %>% filter(kanton == canton)
           
-          # Get canton abbreviation (assuming we need to derive it)
-          canton_abbr <- substr(canton, 1, 2)  # Simple way to get abbreviation, adjust if needed
-          
+          # Use the exact canton abbreviation since that's what we're using as keys in get_canton_colors()
           # Get color from canton_colors or use a default
-          color <- if (!is.null(canton_colors[canton_abbr])) {
-            canton_colors[canton_abbr]
+          color <- if (!is.null(canton_colors[canton])) {
+            canton_colors[canton]
           } else {
             "#808080"  # Default gray
           }
@@ -528,7 +572,7 @@ municipalities_server <- function(id, full_dataset) {
       
       # Create the plot
       p <- ggplot(canton_avg, aes(x = reorder(kanton, avg_value), y = avg_value)) +
-        geom_bar(stat = "identity", fill = "#2b6cb0") +
+        geom_bar(stat = "identity", fill = "#1b6d80") +  # Use consistent color #1b6d80 for all bars
         coord_flip() +
         labs(
           title = paste("Kantonsvergleich des", selected_var_label, "im Jahr", input$selected_year),

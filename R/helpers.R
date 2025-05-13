@@ -26,7 +26,7 @@ create_bar_chart <- function(data, x_var, y_var, fill_var = NULL,
   if (!is.null(fill_var)) {
     p <- p + geom_col(aes_string(fill = fill_var))
   } else {
-    p <- p + geom_col(fill = "#2C3E50")
+    p <- p + geom_col(fill = "#1b6d80")
   }
   
   # Add styling
@@ -73,7 +73,7 @@ create_line_chart <- function(data, x_var, y_var, group_var = NULL,
   if (!is.null(group_var)) {
     p <- p + geom_line(aes_string(color = group_var), size = 1.2)
   } else {
-    p <- p + geom_line(color = "#2C3E50", size = 1.2)
+    p <- p + geom_line(color = "#1b6d80", size = 1.2)
   }
   
   # Add styling
