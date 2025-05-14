@@ -713,11 +713,67 @@ canton_map_server <- function(id, data) {
         # Add color boxes and labels for each value
         for (i in 1:length(discrete_values)) {
           color <- viridis(length(discrete_values), option = "D")[i]
+          
+          # Create description based on variable and value
+          description <- discrete_values[i]
+          
+          # Add descriptions for specific government variables
+          if (input$variable == "reg_proporz") {
+            if (discrete_values[i] == 0) description <- "0: Majorz"
+            if (discrete_values[i] == 1) description <- "1: Proporz"
+          } else if (input$variable == "max_sitzzahl_reg") {
+            description <- paste0(discrete_values[i], ": ", discrete_values[i], " Sitze")
+          } else if (input$variable == "n_bestplatzierte_sitzzahl_reg") {
+            if (discrete_values[i] == 1) description <- "1: Eine dominante Partei"
+            else description <- paste0(discrete_values[i], ": ", discrete_values[i], " Parteien mit gleicher Stärke")
+          } else if (input$variable == "spann") {
+            # Parteipolitische Spannweite descriptions
+            if (discrete_values[i] == 1) description <- "1: Gering"
+            if (discrete_values[i] == 2) description <- "2: Mittel"
+            if (discrete_values[i] == 3) description <- "3: Hoch"
+          } else if (input$variable == "wett_reg_se") {
+            # 100% minus Sitzanteil descriptions based on percentile ranges
+            description <- paste0(discrete_values[i], "%: Restwählerpotential")
+          } else if (input$variable == "wett_reg2_se") {
+            # Unterschied zwischen größter und zweitgrößter Regierungspartei
+            description <- paste0(discrete_values[i], "%: Unterschied")
+          } else if (input$variable == "g") {
+            # Grösse der typischen Regierungspartei
+            if (discrete_values[i] < 1) description <- paste0(discrete_values[i], ": Klein")
+            else if (discrete_values[i] < 2) description <- paste0(discrete_values[i], ": Mittel")
+            else description <- paste0(discrete_values[i], ": Gross")
+          } else if (input$variable == "o") {
+            # Grösse der typischen Oppositionspartei
+            if (discrete_values[i] < 1) description <- paste0(discrete_values[i], ": Klein")
+            else if (discrete_values[i] < 2) description <- paste0(discrete_values[i], ": Mittel")
+            else description <- paste0(discrete_values[i], ": Gross")
+          } else if (input$variable == "ieo") {
+            # Index of Effective Opposition
+            if (discrete_values[i] < 0.2) description <- paste0(discrete_values[i], ": Sehr schwach")
+            else if (discrete_values[i] < 0.4) description <- paste0(discrete_values[i], ": Schwach")
+            else if (discrete_values[i] < 0.6) description <- paste0(discrete_values[i], ": Mittel")
+            else if (discrete_values[i] < 0.8) description <- paste0(discrete_values[i], ": Stark")
+            else description <- paste0(discrete_values[i], ": Sehr stark")
+          } else if (input$variable == "balance") {
+            # Index of Competitiveness
+            if (discrete_values[i] < 0.2) description <- paste0(discrete_values[i], ": Sehr unausgeglichen")
+            else if (discrete_values[i] < 0.4) description <- paste0(discrete_values[i], ": Unausgeglichen")
+            else if (discrete_values[i] < 0.6) description <- paste0(discrete_values[i], ": Mittel")
+            else if (discrete_values[i] < 0.8) description <- paste0(discrete_values[i], ": Ausgeglichen")
+            else description <- paste0(discrete_values[i], ": Sehr ausgeglichen")
+          } else if (input$variable == "parl_election") {
+            if (discrete_values[i] == 0) description <- "0: Keine Wahl"
+            if (discrete_values[i] == 1) description <- "1: Parlamentswahl"
+          } else if (input$variable == "reg_election") {
+            if (discrete_values[i] == 0) description <- "0: Keine Wahl"
+            if (discrete_values[i] == 1) description <- "1: Regierungswahl"
+          }
+          
           legend_html <- paste0(
             legend_html,
             "<div style='display: flex; align-items: center; margin-bottom: 3px;'>",
             "<i style='background:", color, "; width: 18px; height: 18px; display: inline-block; margin-right: 5px;'></i>",
-            "<span>", discrete_values[i], "</span>",
+            "<span>", description, "</span>",
             "</div>"
           )
         }

@@ -191,11 +191,18 @@ direct_democracy_ui <- function(id) {
       column(
         width = 12,
         card(
-          card_header("Analyse"),
+          card_header("Quellen & Daten"),
           card_body(
+            style = "min-height: 600px; padding: 15px;",  # Set minimum height
             tabsetPanel(
               tabPanel(
-                "Datentabelle",
+                "Quelle(n)",
+                div(style = "overflow-y: auto; height: 100%;",
+                    uiOutput(ns("source_info"))
+                )
+              ),
+              tabPanel(
+                "Daten",
                 DTOutput(ns("data_table"))
               )
             )
@@ -809,12 +816,71 @@ direct_democracy_server <- function(id, full_dataset) {
       var_label <- get_var_label(selected_var)
       is_continuous <- selected_var %in% continuous_vars
       
-      # Select relevant columns
-      selected_cols <- c("kanton", "jahr", selected_var)
-      table_data <- data %>% select(all_of(selected_cols))
+      # Get the full dataset (not filtered by year)
+      data <- cleaned_data()
       
-      # Rename columns for display
-      names(table_data) <- c("Kanton", "Jahr", var_label)
+      # Source the canton reference for names
+      source("R/canton_reference.R")
+      
+      # BFS numbers for each canton
+      bfs_numbers <- c(
+        "ZH" = 1, "BE" = 2, "LU" = 3, "UR" = 4, "SZ" = 5, 
+        "OW" = 6, "NW" = 7, "GL" = 8, "ZG" = 9, "FR" = 10,
+        "SO" = 11, "BS" = 12, "BL" = 13, "SH" = 14, "AR" = 15,
+        "AI" = 16, "SG" = 17, "GR" = 18, "AG" = 19, "TG" = 20,
+        "TI" = 21, "VD" = 22, "VS" = 23, "NE" = 24, "GE" = 25,
+        "JU" = 26
+      )
+      
+      # Make sure we're using the canton column with abbreviations
+      # Check if we have a column that explicitly contains abbreviations like "ZH", "BE", etc.
+      abbr_col <- "kanton"  # Default to the current canton column
+      potential_cols <- names(data)[grep("kanton", names(data), ignore.case = TRUE)]
+      for (col in potential_cols) {
+        if (is.character(data[[col]]) && nchar(data[[col]][1]) == 2) {
+          abbr_col <- col
+          print(paste("Using column for abbreviations:", abbr_col))
+          break
+        }
+      }
+      
+      # Select relevant columns
+      year_col <- "jahr"
+      
+      # Filter data to include only relevant columns and order it
+      table_data <- data %>%
+        select(!!sym(abbr_col), !!sym(year_col), !!sym(selected_var)) %>%
+        arrange(!!sym(abbr_col), !!sym(year_col))
+      
+      # Add canton names and BFS numbers
+      table_data <- table_data %>%
+        mutate(
+          bfs_nr = sapply(!!sym(abbr_col), function(abbr) {
+            if (abbr %in% names(bfs_numbers)) {
+              return(bfs_numbers[abbr])
+            } else {
+              return(NA)
+            }
+          }),
+          canton_name = sapply(!!sym(abbr_col), function(abbr) {
+            name <- get_canton_name(abbr, "de")
+            if(is.na(name)) return(abbr)
+            return(name)
+          }),
+          canton_abbr = !!sym(abbr_col)  # Store the original abbreviation
+        )
+      
+      # Rename the value column to the display name
+      names(table_data)[names(table_data) == selected_var] <- var_label
+      
+      # Select and reorder columns
+      table_data <- table_data %>%
+        select(canton_name, canton_abbr, !!sym(year_col), !!var_label)
+      
+      # Rename columns for better display
+      names(table_data)[names(table_data) == "canton_name"] <- "Kanton"
+      names(table_data)[names(table_data) == "canton_abbr"] <- "Kanton-Kürzel"
+      names(table_data)[names(table_data) == year_col] <- "Jahr"
       
       # Format values for continuous variables
       if (is_continuous) {
@@ -827,15 +893,301 @@ direct_democracy_server <- function(id, full_dataset) {
         })
       }
       
-      datatable(
+      # Create the datatable with customized options for one canton per page
+      dt <- datatable(
         table_data,
         options = list(
-          pageLength = 10,
+          pageLength = 45,  # Show enough rows for all years for one canton
           scrollX = TRUE,
-          dom = 'ftip'
+          scrollY = "500px", # Make it scrollable vertically
+          dom = '<"top"ip>rt<"bottom"ip><"clear">',  # Add pagination controls at top and bottom
+          ordering = FALSE,  # Disable sorting to maintain the order
+          lengthChange = FALSE,  # Don't allow changing number of entries shown
+          language = list(
+            paginate = list(
+              previous = "Vorheriger Kanton",
+              "next" = "Nächster Kanton"
+            ),
+            info = ""  # Remove the info text
+          ),
+          rowGroup = list(
+            dataSrc = 0,  # Group by Kanton column (index 0)
+            emptyDataGroup = "No canton data available"
+          ),
+          columnDefs = list(
+            list(width = "140px", targets = 0),  # Kanton
+            list(width = "100px", targets = 1),  # Kanton-Kürzel
+            list(width = "80px", targets = 2),   # Jahr
+            list(width = "140px", targets = 3)   # Value column
+          )
+        ),
+        caption = htmltools::tags$caption(
+          style = 'caption-side: top; text-align: center; font-size: 16px; font-weight: bold;',
+          ''  # Empty caption text
         ),
         rownames = FALSE,
-        class = "compact stripe"
+        class = "display compact"  # No filter class
+      )
+      
+      # Return the datatable
+      dt
+    })
+    
+    # Source information lookup
+    output$source_info <- renderUI({
+      req(filtered_data(), input$variables)
+      
+      # Get the selected variable
+      selected_var <- input$variables
+      
+      # Function to search for variables in documentation
+      find_variable_info <- function(variable_name) {
+        # Try to load the structured documentation first
+        structured_doc_path <- "data/structured_variable_documentation.csv"
+        if (file.exists(structured_doc_path)) {
+          structured_doc <- read.csv(structured_doc_path, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+          
+          # Look for exact match of variable name
+          var_index <- which(structured_doc$Variable == variable_name)
+          
+          if (length(var_index) > 0) {
+            # Return the structured information
+            return(list(
+              source = structured_doc$Quelle.n.[var_index[1]],
+              remarks = structured_doc$Bemerkungen[var_index[1]]
+            ))
+          }
+        }
+        
+        # If the variable isn't found in the structured documentation or the file doesn't exist,
+        # fall back to the specific variables defined below
+        
+        # Special handling for specific variables
+        if (variable_name == "abst_total") {
+          return(list(
+            source = paste("Eigene Berechnungen basierend auf angestellter Erhebung.",
+                           "\n\nBerechnung:", 
+                           "abst_total = init_total + ref_total + gegenvor_init", sep = "\n"),
+            remarks = paste("Jährliche Anzahl Abstimmungen", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "init_total") {
+          return(list(
+            source = paste("Eigene Berechnungen basierend auf angestellter Erhebung.", sep = ""),
+            remarks = paste("Jährliche Anzahl Abstimmungen über Volksinitiativen: Verfassungs- und Gesetzesinitiativen, konstruktive Referenden, verfahrensbezogene Anträge, Behörden- und Gemeindeinitiativen.",
+                            "\n\nBerechnung:",
+                            "init_total = volksinit + vi_verfahr + sonstige_init", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "ref_total") {
+          return(list(
+            source = paste("Eigene Berechnungen basierend auf angestellter Erhebung.", sep = ""),
+            remarks = paste("Jährliche Anzahl Abstimmungen über Referenden: Obligatorische und fakultative Referenden.",
+                            "\n\nBerechnung:",
+                            "ref_total = ref_obl + ref_fak", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "turnout_v") {
+          return(list(
+            source = paste("c2d, Centre of Direct",
+                           "Democracy", sep = "\n"),
+            remarks = paste("Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent.",
+                            "\n\nHinweise:",
+                            "Durchschnitt aller kantonalen Volksabstimmungen im betreffenden Jahr (mehrere Abstimmungen am selben Abstimmungsdatum wurden je separat gezählt; jede Abstimmungsvorlage [nicht etwa jeder Abstimmungstermin] fliesst mit gleichem Gewicht ein; Schätzungen der Stimmbeteiligung bei Landsgemeinden sind hier nicht ausgewiesen).", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "obl_finref") {
+          return(list(
+            source = paste("c2d, Centre of Direct",
+                           "Democracy", sep = "\n"),
+            remarks = paste("Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden (Ausgaben)",
+                            "\n\nHinweise:",
+                            "Bestandteil von ref_obl", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "fak_finref") {
+          return(list(
+            source = paste("c2d, Centre of Direct",
+                           "Democracy", sep = "\n"),
+            remarks = paste("Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben) (inkl. entsprechenden Behördenreferenden)",
+                            "\n\nHinweise:",
+                            "Bestandteil von ref_fak", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "ddr_snddi") {
+          return(list(
+            source = paste("2015–2023:",
+                           "Leemann/Stadelmann-",
+                           "Steffen (2022)", sep = "\n"),
+            remarks = paste("Sub-National Direct Democracy Index",
+                            "\n\nHinweise:",
+                            "Index aus Leemann/Stadelmann-Steffen (2022) übernommen. Der Index wurde bis anhin pro Kanton nur zu einem Zeitpunkt gemessen, dessen Wert in diesem Datensatz für die Jahre 2015 bis 2023 verwendet wurde.",
+                            "\n\nTheoretischer Wertebereich: 0 (wenig ausgebaute direktdemokratische Rechte) bis 2 (stark ausgebaute direktdemokratische Rechte).",
+                            "\n\nFür Detailbemerkungen zur Berechnung und zum Vorgehen: Vgl. Kapitel «Measuring Sub-National Direct Democracy» in Leemann/Stadelmann-Steffen (2022).", sep = "\n")
+          ))
+        }
+        
+        if (variable_name == "ddr_stutz") {
+          return(list(
+            source = paste("1997–2003: ",
+                           "Fischer (2009), Notengebung JU korrigiert.",
+                           "\n\n1980 und 2008: ",
+                           "Eigene Erhebungen auf Basis von Trechsel/Serdült (1999) bzw. Kantonsverfassungen.",
+                           "\n\n1970 und 1996: ",
+                           "Stutzer (1999), eigene Erhebungen auf Basis von Trechsel/Serdült (1999) bzw. Kantonsverfassungen.",
+                           "\n\n1992: ",
+                           "Stutzer/Frey (2000), eigene Erhebungen auf Basis von Trechsel/Serdült (1999) bzw. Kantonsverfassungen.",
+                           "\n\nEigene Erhebungen für die Jahre 2008–2018 unter Einbezug von Daten von Leeman/Stadelmann-Steffen (2019) und Kuster/Leuzinger (2019)", sep = ""),
+            remarks = paste("Direktdemokratische Rechte (Index)",
+                            "\n\nHinweise:",
+                            "Index konstruiert nach Stutzer (1999).",
+                            "\n\nTheoretischer Wertebereich: 1 (wenig ausgebaute direktdemokratische Rechte) bis 6 (stark ausgebaute direktdemokratische Rechte).",
+                            "\n\nBerechnung: Mittelwert aus gir, vir, grr, frr.",
+                            "\n\nStichtag: Für die Jahre 1997–2003 ist der 1. April (Fischer 2009: 65), für alle anderen Jahre jeweils der 31. Dezember des jeweiligen Jahres der Stichtag der Erhebung.",
+                            "\n\nFür Detailbemerkungen zum Vorgehen: Vgl. Dokumente «Notizen zu Teilindizes Stutzer-Index» und «Gewichtung Fak-Obl GesRef SH BL SO AG» (kann auf Anfrage zugestellt werden).",
+                            "\n\nDurch Quellen gesicherte Zeitpunkte: 1980, 1992, 1996–2003, 2008–2018. Lineare Interpolation: Werte von 1980 übernommen für 1979.", sep = "")
+          ))
+        }
+        
+        if (variable_name == "gir" || variable_name == "vir" || 
+            variable_name == "grr" || variable_name == "frr") {
+          
+          var_titles = list(
+            "gir" = "Gesetzesinitiativrecht (Index)",
+            "vir" = "Verfassungsinitiativrecht (Index)",
+            "grr" = "Gesetzesreferendumsrecht (Index)",
+            "frr" = "Finanzreferendumsrecht (Index)"
+          )
+          
+          return(list(
+            source = paste("siehe ddr_stutz", sep = "\n"),
+            remarks = paste(var_titles[[variable_name]],
+                            "\n\nHinweise:",
+                            "Index konstruiert nach Stutzer (1999); siehe ddr_stutz für detailliertere Erläuterungen.", sep = "\n")
+          ))
+        }
+        
+        # Try to gather information from multiple sources for completeness like in democratic_institutions_module
+        sources_info <- c()
+        remarks_info <- c()
+        
+        # Try to read variable documentation from CSV
+        var_doc_path <- "data/cleaned_variable_documentation.csv"
+        if (file.exists(var_doc_path)) {
+          tryCatch({
+            var_doc <- read.csv(var_doc_path, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+            
+            # Look for the variable name (exact match)
+            var_index <- which(var_doc[,1] == variable_name)
+            
+            if (length(var_index) > 0) {
+              # Store the source and remarks
+              sources_info <- c(sources_info, paste("Quelle:", var_doc[var_index[1], 2]))
+              remarks_info <- c(remarks_info, paste("Beschreibung:", var_doc[var_index[1], 3]))
+              
+              # Look for additional lines with the variable's calculation or notes
+              if (var_index[1] < nrow(var_doc)) {
+                additional_lines <- var_index[1] + 1
+                while(additional_lines <= nrow(var_doc) && 
+                      (var_doc[additional_lines, 1] == "" || 
+                       grepl(variable_name, var_doc[additional_lines, 1]))) {
+                  
+                  if (var_doc[additional_lines, 2] != "") {
+                    sources_info <- c(sources_info, var_doc[additional_lines, 2])
+                  }
+                  if (var_doc[additional_lines, 3] != "") {
+                    remarks_info <- c(remarks_info, var_doc[additional_lines, 3])
+                  }
+                  additional_lines <- additional_lines + 1
+                }
+              }
+            }
+            
+            # If not found by exact match, try partial match
+            if (length(var_index) == 0) {
+              var_index <- which(grepl(variable_name, var_doc[,1], fixed = TRUE))
+              
+              if (length(var_index) > 0) {
+                # Store the source and remarks
+                sources_info <- c(sources_info, paste("Quelle (partielle Übereinstimmung):", var_doc[var_index[1], 2]))
+                remarks_info <- c(remarks_info, paste("Beschreibung (partielle Übereinstimmung):", var_doc[var_index[1], 3]))
+              }
+            }
+          }, error = function(e) {
+            print(paste("Error reading variable documentation:", e$message))
+          })
+        }
+        
+        # If we've gathered information from any source, use it
+        if (length(sources_info) > 0 || length(remarks_info) > 0) {
+          source_text <- if (length(sources_info) > 0) paste(sources_info, collapse = "\n\n") else "Keine Quelleninformation gefunden"
+          remarks_text <- if (length(remarks_info) > 0) paste(remarks_info, collapse = "\n\n") else "Keine Bemerkungen verfügbar"
+          
+          return(list(
+            source = source_text,
+            remarks = remarks_text
+          ))
+        }
+        
+        # Generic fallback for variables without specific info
+        return(list(
+          source = "Keine Quelleninformation gefunden",
+          remarks = "Keine Bemerkungen verfügbar"
+        ))
+      }
+      
+      # Find information for the selected variable
+      info <- find_variable_info(selected_var)
+      
+      # Variable name mapping for display
+      var_label <- get_var_label(selected_var)
+      
+      # Create UI elements with better styling
+      tagList(
+        div(style = "margin-top: 20px;"), # Extra space above
+        h4(paste0("Variable: ", var_label, " (", selected_var, ")"), 
+           style = "color: #1b6d80; border-bottom: 1px solid #ddd; padding-bottom: 8px;"),
+        
+        div(class = "row", style = "margin-top: 15px;",
+            div(class = "col-12",
+                h5("Quellen:", style = "font-weight: bold; color: #1b6d80;"),
+                div(
+                  style = "white-space: pre-wrap; overflow-y: visible; 
+                          padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f8f9fa;",
+                  HTML(gsub("\n", "<br>", info$source))
+                )
+            )
+        ),
+        
+        div(class = "row", style = "margin-top: 15px;",
+            div(class = "col-12",
+                h5("Bemerkungen:", style = "font-weight: bold; color: #1b6d80;"),
+                div(
+                  style = "white-space: pre-wrap; overflow-y: visible; 
+                          padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f8f9fa;", 
+                  HTML(gsub("\n", "<br>", info$remarks))
+                )
+            )
+        ),
+        
+        div(class = "row", style = "margin-top: 15px;",
+            div(class = "col-12",
+                h5("Codebuch:", style = "font-weight: bold; color: #1b6d80;"),
+                div(
+                  style = "white-space: pre-wrap; overflow-y: visible; 
+                          padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f8f9fa;",
+                  tags$a(href = "Kantonale DM_1979–2023_Codebuch.pdf", 
+                         target = "_blank",
+                         "Codebuch Demokratiemuster in den Schweizer Kantonen, 1979–2023 (Datensatz)")
+                )
+            )
+        )
       )
     })
   })

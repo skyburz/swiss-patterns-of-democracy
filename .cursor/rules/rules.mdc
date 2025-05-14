@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+always open the firefox browser automatically when running a shiny app
+always use this command to run the app: Rscript -e "shiny::runApp(launch.browser = TRUE)"
+never open a new editor tab in cursor when running the app
+never open a terminal tab in the main window when running the app
+
+# Code Style
+always use tidyverse style guide for R code
+always use meaningful variable names
+always document functions with roxygen2 style comments
+
+# Data Handling
+always validate input data before processing
+always handle missing values explicitly
+always use structured_variable_documentation.csv for variable documentation
+
+# Project Workflow
+always test changes in the browser before committing
+always check for errors in the R console
+never commit code with debugging print statements
+
+# Module Structure
+always organize related UI and server components in modules
+always use namespacing with the ns() function in modules
+always check output$source_info and output$data_table implementations
+

@@ -1,0 +1,85 @@
+"Variable","Quelle(n)","Bemerkungen"
+"sitzparl","Für 1979–2008: BFS (diverse Jahrgänge), APS (diverse Jahrgänge). 
+
+Für 2009–2023: BFS: Kantonale Parlamentswahlen: Mandatsverteilung nach Parteien und Kanton (BFS-Nummer: je-d-17.02.05.01.03) https://www.bfs.admin.ch/asset/de/24385274 (zuletzt heruntergeladen am: 16.05.2023)","Anzahl Sitze im Parlament
+
+Hinweise: Angaben und deren Änderungen gehen immer vom relevanten Wahljahr/-tag und nicht der Legislaturperiode aus. Bezugsrahmen ist somit immer der Wahlzyklus.
+
+Bsp. AG: Das Wahljahr 2012 stimmt nicht mit der üblichen Legislaturperiode von vier Jahren überein. So wurde 2009 eine Gesamterneuerungswahl durchgeführt, wobei das darauffolgende Wahljahr bereits drei Jahre später war (2012 anstelle 2013). Die Wahlen wurden demnach ab dem Jahr 2012 jeweils im Vorjahr der neuen Legislaturperiode abgehalten."
+"parlegisl","Für 1979–2008: 1998: Lutz/Strohmann (1998: 64), 2008: Kantonsparlamente.ch (2008: Zeile 1.4.1), 1986: Moser (1987: 44), Verfassungen für AR, AI
+
+Für 2009–2023: BFS: Kantonale Parlamentswahlen: Mandatsverteilung nach Parteien und Kanton (BFS-Nummer: je-d-17.02.05.01.03) https://www.bfs.admin.ch/asset/de/24385274 (zuletzt heruntergeladen am: 16.05.2023)","Amtsdauer des Parlaments in Jahren"
+"proporz","1979–1982: Vatter (2002: 119f.), Vatter et al. (2004). OW, NW und UR korrigiert gemäss Vatter (2002: 119) und APS 1992 (zu UR). Kantonsverfassungen, Flick Witzig (2019), Kantonsverfassungen","Proportionalitätsgrad des Wahlsystems bei Parlamentswahlen (drei Kategorien)
+
+Kategorien:
+1 = reiner Majorz
+2 = gemischt (Majorz/Proporz)
+3 = reiner Proporz
+
+Hinweise: Als Änderungsjahr wird das erste Wahljahr gemäss neuem Wahlsystem codiert."
+"proporz3reg","1979–1982: Vatter (2002: 119f.); Kantonsverfassungen. Vatter et al. (2004), Kantonsverfassungen. OW, NW und UR korrigiert gemäss Vatter (2002: 119) und APS 1992 (zu UR). Kantonsverfassungen, Flick Witzig (2019), Kantonsverfassungen","Proportionalitätsgrad der Wahlsysteme bei Parlaments- und Regierungsratswahlen
+
+Kategorien: Kombinierter Indikator mit Maximalwert von sechs Punkten mit...
+
+(a) maximal drei Punkte für Regierungsratswahlen:
+0 = für Majorz mit erforderlichem Mehr von 50 Prozent im 1. Wahlgang.
+1 = für Majorz mit erforderlichem Mehr von 33.3 Prozent im 1. Wahlgang (GE)
+3 = für Proporz (ZG, TI);
+
+(b) maximal drei Punkten für Parlamentswahlen:
+0 = reiner Majorz.
+2 = gemischt mit relativem Mehr
+3 = reiner Proporz"
+"reg_proporz","1987: Moser (1987)
+
+1998: Lutz/Strohmann (1998: 29)
+
+2004: Bochsler et al. (2004: 51)
+
+2007: Bochsler/Goridis (2009), Stand des Datensatzes im Dezember 2008)
+
+Rest, 1979–2008: extra-/intrapoliert
+
+2009–2012: Kantonsverfassungen
+
+2013–2018: Flick Witzig (2019)
+
+2019–2023: Kantonsverfassungen","Wahlverfahren bei Regierungsratswahlen (Dummy)
+
+Kategorien:
+0 = Majorz
+1 = Proporz
+
+Hinweise:
+GE bis 2012: 1/3 der gültigen Stimmen im 1. Wahlgang reichen bereits für einen Sitzgewinn aus («majorité qualifiée»; siehe Art. 96 und Art. 98, «Loi sur l'exercice des droits politiques (LEDP)», in Kraft seit 1983; Kölz 1987: 3–4) mit 0.2 codiert."
+"abst_total","Eigene Berechnungen basierend auf angestellter Erhebung.
+
+Berechnung: abst_total = init_total + ref_total + gegenvor_init","Jährliche Anzahl Abstimmungen"
+"ddr_stutz","1997–2003: Fischer (2009), Notengebung JU korrigiert.
+
+1980 und 2008: Eigene Erhebungen auf Basis von Trechsel/Serdült (1999) bzw. Kantonsverfassungen.
+
+1970 und 1996: Stutzer (1999), eigene Erhebungen auf Basis von Trechsel/Serdült (1999) bzw. Kantonsverfassungen.
+
+1992: Stutzer/Frey (2000), eigene Erhebungen auf Basis von Trechsel/Serdült (1999) bzw. Kantonsverfassungen.
+
+Eigene Erhebungen für die Jahre 2008–2018 unter Einbezug von Daten von Leeman/Stadelmann-Steffen (2019) und Kuster/Leuzinger (2019)","Direktdemokratische Rechte (Index)
+
+Hinweise: Index konstruiert nach Stutzer (1999).
+
+Theoretischer Wertebereich: 1 (wenig ausgebaute direktdemokratische Rechte) bis 6 (stark ausgebaute direktdemokratische Rechte).
+
+Berechnung: Mittelwert aus gir, vir, grr, frr.
+
+Stichtag: Für die Jahre 1997–2003 ist der 1. April (Fischer 2009: 65), für alle anderen Jahre jeweils der 31. Dezember des jeweiligen Jahres der Stichtag der Erhebung.
+
+Für Detailbemerkungen zum Vorgehen: Vgl. Dokumente «Notizen zu Teilindizes Stutzer-Index» und «Gewichtung Fak-Obl GesRef SH BL SO AG» (kann auf Anfrage zugestellt werden).
+
+Durch Quellen gesicherte Zeitpunkte: 1980, 1992, 1996–2003, 2008–2018. Lineare Interpolation: Werte von 1980 übernommen für 1979."
+"turnout_e","Für 1979–2023: BFS: Kantonale Parlamentswahlen: Stärke der Parteien und Wahlbeteiligung (BFS-Nummer: je-d-17.02.05.01.02) https://www.bfs.admin.ch/asset/de/24385279 (zuletzt heruntergeladen am: 16.05.2023).
+
+Kantonale Parlamentswahlen: Parteistärken mit Zuteilung der Mischlisten auf die Parteien (BFS-Nummer: je-d-17.02.05.02.03): https://www.bfs.admin.ch/asset/de/24385265 (zuletzt heruntergeladen am: 21.06.2023).","Wahlbeteiligung bei (vorangegangenen) Gesamterneuerungswahlen ins Kantonsparlament (in Prozent der Stimmberechtigten).
+
+Hinweise: Für vereinzelte Kantone bestehen Lücken in den Zeitreihen, v.a. bedingt durch Majorzwahlen in den entsprechenden Jahren (UR, NW, AR, AI, GR).
+
+Für nachfolgende Kantone wurden die Angaben für 1979–2008/09 korrigiert, falls diese von den aktuelleren Datengrundlagen abweichen, sodass ebendiese Angaben der aktuelleren Datengrundlagen ausgewiesen werden; dies betrifft: ZH, BE, LU, SZ, OW, GL, ZG, FR, SO, BS, BL, SH, AG, TG, TI, VD, VS, NE, GE." 

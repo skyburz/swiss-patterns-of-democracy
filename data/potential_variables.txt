@@ -1,0 +1,132 @@
+und Erläuterungen für den Zeitraum 1979–2008 bzw. 2009–2018 wurden ebendiesen Quellen entnommen.
+Die Autoren sind dankbar um jegliche Anmerkungen und Hinweise im Zusammenhang mit der nachfolgend beschriebenen Datensammlung – bspw.
+zu Fehlern, Unklarheiten oder Verbesserungsmöglichkeiten. Kontakt: elia.gerber@unibe.ch.
+Parlament und Parlamentswahlen
+Indikator        Quelle(n)                   Bemerkungen
+sitzparl         Für 1979–2008:              Anzahl Sitze im Parlament
+heruntergeladen am:    Im Gegensatz zu den kantonalen Parlamentswahlen folgt die Zusammenstellung des
+der Mischlisten auf die     (Ausnahmen (I) UR: hier wurden für/ab 2008 vom BFS zum ersten Mal Parteistärken
+Parteien (BFS-Nummer:       berechnet; (II) SZ, SG, TG: hier Diskrepanz von ca. 1,5 bzw. 3 Prozentpunkten bei
+der Mischliste gegeben oder nicht. Hier Zuteilung der Mischlisten auf Parteien ab
+beteiligt sind (i.d.R. ab 2009), ist anzunehmen, dass ab 2009 der Anteil «Übrige» z.T.
+aufgrund von Mischlisten nicht genau nachvollzogen werden konnte, in «Übrige»
+jener Parteien, die auch effektiv einen Parlamentssitz errungen haben.
+Das Total der Wähleranteile pro Partei kann teilweise minimal von 100 Prozent
+Bis 2018 wurden alle Angaben zu den prozentualen Wähleranteilen prinzipiell auf eine
+Dezimalzahl gerundet. Ab 2019 wurden diese Daten aber so exakt wie möglich aus
+der BFS-Quelle (BFS-Nummer: je-d-17.02.05.02.03) übernommen, so dass die
+prozentualen Wähleranteile nun prinzipiell auf zwölf bis 14 Dezimalstellen genau
+angegeben sind. Die Angaben der Wähleranteile wurden bis zum jeweils letzten
+Wahljahr zurückkorrigiert, so dass für alle Jahre der Legislaturperioden, die das Jahr
+Dies um in Kantonen, die im Jahr 2019 keine Gesamterneuerungswahlen
+Vergleich zum Vorjahr (2018) zu vermeiden.
+Es gibt zwei Ausnahmefälle, in denen die Angaben zu den prozentualen
+Entsprechende Informationen wurden hier so übernommen.
+Sitze gemäss BFS ab 2014 nicht CSP, sondern separat aufzuführen. Auf Basis von
+Informationen der CSP-OW (https://www.csp-ow.ch/partei/geschichte/) wird
+der CSP zuzurechnen sind: «Von 2005–2009 pflegte die CSP Obwalden als
+assoziiertes Mitglied Kontakte zur unabhängigen CSP Schweiz […]. Seit 2010 ist die
+CSP Obwalden in keine nationale Gruppierung mehr eingebunden, sie politisiert –
+christlichsozialem Gedankengut verpflichtet – ausschliesslich auf kantonaler Ebene».
+Im Gegensatz zu den kantonalen Parlamentswahlen folgt die Zusammenstellung des
+BFS zu den kantonalen Regierungswahlen ebenfalls dieser Einteilung und ordnet
+entsprechende Regierungssitze ab 2010 der CSP-OW zu: «CSP-Obwalden. Diese
+hatte zwischen 2005 und 2010 den Beobachterstatus bei der CSP-Schweiz inne. 2010
+wurde die Zusammenarbeit mit der CSP-Schweiz beendet, weshalb sie ab 2010 unter
+OW zugeschrieben (und nicht der CSP Schweiz).
+Per 1. Januar 2021 fusionierten die CVP und die BDP auf Bundesebene zur neu
+in den Folgejahren 2021 und 2022 alle kantonalen Fraktionen der beiden Parteien
+entsprechend ihrer Mutterparteien die Fusion bzw. die Namensänderung. Es handelte
+sich in den Kantonen, in denen nur eine der beiden Parteien bestand, meist die CVP,
+um eine Namensänderung, nicht um eine Fusion. Die Variablen cvp_parl_v und
+bdp_parl_v werden ab dem Jahr der Fusion/Namensänderung (2021 oder 2022, je
+nach Kanton) als Missing codiert. Umgekehrt zur Variable mitte_parl, welche
+Missing codiert ist. Falls im Jahr der Fusion/Namensänderung keine
+parl_election   Für 1979–2008:              Parlamentswahlen im entsprechenden Jahr
+parlegisl   Für 1979–2008:              Amtsdauer des Parlaments in Jahren
+turnout_e   Für 1979–2023:              Wahlbeteiligung bei (vorangegangenen) Gesamterneuerungswahlen ins
+rae         Eigene Berechnungen           Rae-Index der Parteienfraktionalisierung (effektive Anzahl Parteien, die ins
+partfrakt   Eigene Berechnungen           Parteifraktionalisierung: Effektive Parteienzahl basierend auf den Sitzanteilen
+parl_party      Eigene Berechnungen          (Absolute) Anzahl Parlamentsparteien. Parteilose und «Übrige» mitgerechnet.
+wett_parl_se    Eigene Berechnungen          100 Prozent minus Sitzanteil stärkste Partei (Parlament) (importance of the offer)
+wett_parl2_se   Eigene Berechnungen          Unterschied grösste–zweitgrösste Partei (Parlament) in Prozent aller Sitze
+wett_parl_vo            Eigene Berechnungen          100 Prozent minus Wähleranteil stärkste Partei (Parlament) (importance of the
+wett_parl2_vo           Eigene Berechnungen          Unterschied grösste–zweitgrösste Partei (Parlament) in Prozent aller
+max_sitzzahl_parl       Eigene Berechnungen          Anzahl der Sitze der stärksten Partei
+n_bestplatzierte_parl   Eigene Berechnungen          Anzahl stärkster/bestplatzierter Parteien
+volatilitaet_se         Eigene Berechnungen          Parlamentarische Volatilität berechnet anhand der Nettoveränderung der
+volatilitaet_se_election   Eigene Berechnungen      Parlamentarische Volatilität berechnet anhand der Nettoveränderung der
+volatilitaet_se_year       Eigene Berechnungen      Parlamentarische Volatilität berechnet anhand der Nettoveränderung der
+volatilitaet_vo   Eigene Berechnungen          Wählervolatilität berechnet anhand der Nettoveränderung der prozentuellen
+volatilitaet_vo   Eigene Berechnungen          Wählervolatilität berechnet anhand der Nettoveränderung der prozentuellen
+gallagher         Eigene Berechnungen          Effektive Disproportionalität des Wahlsystems, gemessen an den prozentualen
+parl_left         Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+parl_cent         Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+parl_right    Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+parl_kath     Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+parl_gruene   Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+Regierung und Regierungsratswahlen
+Indikator        Quelle(n)                    Bemerkungen
+sitzreg          Für 1979–2008:               Anzahl Sitze in der Regierung
+reg_election     Für 1979–2008:               Regierungsratswahlen im entsprechenden Jahr
+reg_left   Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+reg_cent     Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+reg_right    Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+reg_kath     Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+reg_gruene   Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+reg_party    Eigene Berechnungen          Anzahl Regierungsparteien
+reg_konk     Eigene Berechnungen          Summierte Wähleranteile der Regierungsparteien in Prozent.
+konk_2             Eigene Berechnungen          Konkordanz
+spann              Eigene Berechnungen          Parteipolitische Spannweite der Regierungskoalition
+wett_reg_se        Eigene Berechnungen          100 Prozent minus Sitzanteil stärkste Partei (Reg.)
+wett_reg2_se       Eigene Berechnungen          Unterschied grösste–zweitgrösste Partei (Reg.) in Prozent aller Sitze
+max_sitzzahl_reg   Eigene Berechnungen          Anzahl der Sitze der stärksten Regierungspartei
+n_bestplatzierte_reg   Eigene Berechnungen          Anzahl stärkster/bestplatzierter Regierungsparteien
+g                      Eigene Berechnungen          Grösse der typischen Regierungspartei
+o                      Eigene Berechnungen          Grösse der typischen Oppositionspartei
+ieo                    Eigene Berechnungen          Effektive Stärke der Oppositionsparteien gegenüber den Regierungsparteien im
+balance   Eigene Berechnungen          Effektives Gleichgewicht zwischen Oppositionsparteien und Regierungsparteien
+Indikator    Quelle(n)                    Bemerkungen
+proporz      1979–1982:                   Proportionalitätsgrad des Wahlsystems bei Parlamentswahlen (drei Kategorien)
+proporz4   1979–1982:                   Proportionalitätsgrad des Wahlsystems bei Parlamentswahlen (vier Kategorien)
+proporz3reg   1979–1982:                   Proportionalitätsgrad der Wahlsysteme bei Parlaments- und
+reg_proporz   1987:                        Wahlverfahren bei Regierungsratswahlen (Dummy)
+Stand des Datensatzes im
+Dezember 2008)
+Flick Witzig (2019)
+Direkte Demokratie
+Indikator                  Quelle(n)                    Bemerkungen
+abst_total                 Eigene Berechnungen          Jährliche Anzahl Abstimmungen
+init_total                 Eigene Berechnungen          Jährliche Anzahl Abstimmungen über Volksinitiativen: Verfassungs- und
+ref_total                  Eigene Berechnungen          Jährliche Anzahl Abstimmungen über Referenden:
+gegenvor_init              Eigene Berechnungen          Jährliche Anzahl Abstimmungen über Gegenvorschläge von Volksinitiativen
+ref_obl                  c2d, Centre of Direct        Jährliche Anzahl obligatorischer Referenden (inkl. obl_finref)
+ref_fak     c2d, Centre of Direct        Jährliche Anzahl fakultativer Referenden (inkl. Behördenreferenden) (inkl.
+volksinit   c2d, Centre of Direct        Jährliche Anzahl Volksinitiativen
+sonstige_init            c2d, Centre of Direct        Behörden- und Gemeindeinitiativen
+vi_verfahr               Landsgemeindekantone:        Jährliche Anzahl Abstimmungen über Ordnungs-/verfahrensbezogene Anträge
+obl_finref               c2d, Centre of Direct       Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden
+fak_finref               c2d, Centre of Direct        Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)
+turnout_v                c2d, Centre of Direct        Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent.
+ddr_snDDI   2015–2023:                   Sub-National Direct Democracy Index
+ddr_stutz   1997–2003:                   Direktdemokratische Rechte (Index)
+gir   siehe ddr_stutz              Gesetzesinitiativrecht (Index)
+vir   siehe ddr_stutz              Verfassungsinitiativrecht (Index)
+grr   siehe ddr_stutz              Gesetzesreferendumsrecht (Index)
+frr   siehe ddr_stutz   Finanzreferendumsrecht (Index)
+Gemeinden (politisches System und deren Verhältnis zum Kanton)
+Indikator         Quelle(n)                 Bemerkungen
+ddr_gde_obl       Flick Witzig und Vatter   Ausmass kantonaler Vorgaben zu obligatorischen Referenden
+ddr_gde_fak       Flick Witzig und Vatter   Ausmass kantonaler Vorgaben zu fakultativen Referenden
+ddr_gde_init      Flick Witzig und Vatter   Ausmass kantonaler Vorgaben zu kommunalen Initiativen
+APS Année Politique Suisse (div. Jahre): Schweizerische Politik. Bern: Institut für Politikwissenschaft. URL: https://anneepolitique.swiss/.
+American Countries. Democratization 9(2): 85-100.
+BFS Bundesamt für Statistik (div. Jahre): Statistik zu kantonalen Wahlen. Neuchâtel: Bundesamt für Statistik. URL: https://www.bfs.admin.ch/
+Flick Witzig, Martina (2019): Institutionelle Grundlagen der Parlamentswahlen in den Kantonen. Datensatz zu Tabelle 2.1. In Das politische System
+der Schweiz, vierte Auflage, Adrian Vatter. Baden-Baden: Nomos.
+Flick Witzig, Martina; Vatter, Adrian (2023): Direkte Demokratie in den Gemeinden. Basel: NZZ Libro.
+Parteiensystemen in den Schweizer Kantonen. Wiesbaden: VS Verlag für Sozialwissenschaften.
+Winners Together. Comparative Political Studies 55(1): 93–121.
+Research 7(1): 1–26.
+Political Science Review 6(3): 1–30.
+Schweizer Kantonen. Opladen: Leske+Budrich.

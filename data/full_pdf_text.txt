@@ -1,0 +1,1386 @@
+ Codebuch Demokratiemuster in den Schweizer Kantonen, 1979–2023 (Datensatz) 1
+
+Zitierweise: Vatter, Adrian; Arnold, Tobias; Arens, Alexander; Vogel, Laura-Rosa; Bühlmann, Marc; Schaub, Hans-Peter; Dlabac, Oliver; Wirz, Rolf;
+Freiburghaus, Rahel; Della Porta, Davide (2024): Patterns of Democracy in the Swiss Cantons, 1979–2023 [Dataset]. Bern: Universität Bern, Institut
+für Politikwissenschaft.
+Hinweis: Bei der nachfolgend beschriebenen Datensammlung handelt es sich um eine teilweise Weiterführung des Datensatz[es]
+Demokratiequalität in den Schweizer Kantonen [Datensatz] von Adrian Vatter, Tobias Arnold, Alexander Arens, Laura-Rosa Vogel, Marc Bühlmann,
+Hans-Peter Schaub, Oliver Dlabac und Rolf Wirz (2020) sowie verschiedener Erhebungen, welche diesem zugrunde lagen. Nahezu alle Angaben
+und Erläuterungen für den Zeitraum 1979–2008 bzw. 2009–2018 wurden ebendiesen Quellen entnommen.
+Die Autoren sind dankbar um jegliche Anmerkungen und Hinweise im Zusammenhang mit der nachfolgend beschriebenen Datensammlung – bspw.
+zu Fehlern, Unklarheiten oder Verbesserungsmöglichkeiten. Kontakt: elia.gerber@unibe.ch.
+
+
+
+
+1 Version: 1. Oktober 2024.
+
+
+
+
+                                                                                                                                                1
+
+Parlament und Parlamentswahlen
+Indikator        Quelle(n)                   Bemerkungen
+
+sitzparl         Für 1979–2008:              Anzahl Sitze im Parlament
+
+                 BFS (diverse Jahrgänge),
+                 APS (diverse Jahrgänge).
+
+
+                 Für 2009–2023:              Hinweise:
+                                             Angaben und deren Änderungen gehen immer vom relevanten Wahljahr/-tag und
+                 BFS: Kantonale              nicht der Legislaturperiode aus. Bezugsrahmen ist somit immer der Wahlzyklus.
+                 Parlamentswahlen:
+                 Mandatsverteilung nach      Bsp. AG: Das Wahljahr 2012 stimmt nicht mit der üblichen Legislaturperiode von vier
+                 Parteien und Kanton         Jahren überein. So wurde 2009 eine Gesamterneuerungswahl durchgeführt, wobei
+                 (BFS-Nummer: je-d-          das darauffolgende Wahljahr bereits drei Jahre später war (2012 anstelle 2013). Die
+                 17.02.05.01.03)             Wahlen wurden demnach ab dem Jahr 2012 jeweils im Vorjahr der neuen
+                 https://www.bfs.admin.ch/   Legislaturperiode abgehalten.
+                 asset/de/24385274
+                 (zuletzt heruntergeladen
+                 am: 16.05.2023)
+
+
+
+
+                                                                                                                                   2
+
+ [Partei(gruppe)]_parl_s 23            Für 1979–2008:                        Anzahl Parlamentssitze jeweiliger Partei (und Parteigruppe), von Parteilosen
+                                                                             und Übrigen
+ [Partei(gruppe)]_parl_sa
+ 4
+                                       Für alle Kantone ausser AI            Hinweise:
+                                       und AR:                               − Partei (PDA, GP, SP, CVP, Die Mitte, FDP, LPS, SVP, DSP, CSP, DN, Lega,
+                                       Primär BFS (diverse                      PSA, PPN, PRR, GLP, BDP, LDU, Poch, SOL, EVP, SD, EDU, FPS)
+                                       Jahrgänge): Statistik der             − Parteigruppe Alternativer Grüner Sozialisten und Frauengruppierungen (FGA)
+                                       kantonalen Wahlen;                    − Parteilose («parlos»)
+                                       Sekundär (ergänzend,                  − übriger Parteien («uebrig»).
+                                       korrigierend) APS (diverse
+                                       Jahrgänge).                           Veränderungen, bspw. aufgrund von Rücktritten oder Parteiwechseln, sind prinzipiell
+                                                                             nicht berücksichtigt (Ausnahmen ausgenommen, siehe u.a. Parteiwechsel zur BDP im
+                                                                             Jahr 2008 sowie zur DSP 1982 (BS), 1987 (GR), 1989 (FR)).
+
+                                                                             Massgebend für die parteipolitische Zuordnung der Mandate sind die Listen, auf
+                                                                             denen die Abgeordneten gewählt wurden und nicht der nach der Wahl eventuell
+                                                                             erfolgte Beitritt zu einer Fraktion.
+
+                                                                             Für AR bis 2002: primär APS (diverse Jahrgänge), wobei für 1987–1995 – bei relativ
+                                                                             stabilen Verhältnissen – nur grobe Angaben verfügbar sind; sekundär Huber
+                                                                             (Staatskundelexikon, versch. Auflagen).
+
+                                       Für 2009–2023:                        MCR/MCG: ergänzt, in vorangegangener Erhebung im Zusammenhang mit Vatter et
+                                                                             al. (2012) nicht enthalten.
+                                        − BFS: Kantonale
+                                          Parlamentswahlen:                  CSP-OW: Laut Quelle (BFS) ohne Verbindung zur CSP-Schweiz, dadurch CSP-OW-
+                                          Mandatsverteilung                  Sitze gemäss BFS ab 2014 nicht CSP, sondern separat aufzuführen. Auf Basis von
+                                          nach Parteien und                  Informationen der CSP-OW (https://www.csp-ow.ch/partei/geschichte/) wird
+                                          Kanton (BFS-Nummer:                angenommen, dass bereits ab 2010 alle Sitze und Stimmen der CSP-OW und nicht
+                                          je-d-17.02.05.01.03):              der CSP zuzurechnen sind: «Von 2005–2009 pflegte die CSP Obwalden als
+                                          https://www.bfs.admin.             assoziiertes Mitglied Kontakte zur unabhängigen CSP Schweiz […]. Seit 2010 ist die
+
+
+2 Variablenkürzel für Parteien: pda, gp, sp, cvp, mitte, fdp, lps, svp, dsp, csp, dn, lega, fga, psa, ppn, prr, glp, bdp, ldu, parlos, poch, sol, evp, sd, rep, edu, fps, uebrig
+3 Variablenkürzel siehe FN 2; Zusatz _parl_s steht für absolute Sitzzahl im Parlament.
+4 Variablenkürzel siehe FN 2; Zusatz _parl_sa steht für Sitzanteil im Parlament.
+
+
+
+
+                                                                                                                                                                                   3
+
+ch/asset/de/24385274   CSP Obwalden in keine nationale Gruppierung mehr eingebunden, sie politisiert –
+(zuletzt               christlichsozialem Gedankengut verpflichtet – ausschliesslich auf kantonaler Ebene».
+heruntergeladen am:    Im Gegensatz zu den kantonalen Parlamentswahlen folgt die Zusammenstellung des
+16.05.2023)            BFS zu den kantonalen Regierungswahlen ebenfalls dieser Einteilung und ordnet
+                       entsprechende Regierungssitze ab 2010 der CSP-OW zu: «CSP-Obwalden. Diese
+                       hatte zwischen 2005 und 2010 den Beobachterstatus bei der CSP-Schweiz inne. 2010
+                       wurde die Zusammenarbeit mit der CSP-Schweiz beendet, weshalb sie ab 2010 unter
+                       «Übrige» geführt wird» (FN 5 Tabellenblatt «2010», BFS-Datensatz Nummer je-d-
+                       17.02.06.01). Entsprechend wurden alle Parlamentssitze der Partei ab 2010 der CSP-
+                       OW zugeschrieben (und nicht der CSP Schweiz).
+
+                       DN, PPN und PRR für 2009–2023: Nicht im BFS-Datensatz aufgeführt.
+
+                       UR: Kontrolle unter Konsultation von https://anneepolitique.swiss/dossiers/248-
+                       kantonale-wahlen-uri (zuletzt geöffnet am 05.01.2019) und
+                       http://www.urikon.ch/UR_Behoerden/BEH_LR_Landrat.aspx (siehe hier auch
+                       «Übersicht: Der Landrat (bestimmtes Datum)» (Suchanfrage für 01.01.2013 und
+                       01.01.2017); zuletzt geöffnet am 05.01.2019).
+
+                       NW: Gemäss NZZ (https://www.nzz.ch/nidwalden_demokratisches_nidwalden_
+                       gruene_nidwalden-1.760582, zuletzt geöffnet am 07.01.2019) ist die Partei
+                       «Demokratisches Nidwalden (DN)» – Kürzel «dn» im Datenstaz – 2004 der GPS
+                       beigetreten und nannte sich mit Gültigkeit 01.01.2009 «Grüne Nidwalden». Hier
+                       werden alle Wahlergebnisse des ehemaligen «dn» ab Wahljahr 2010 unter der «gp»
+                       abgetragen.
+
+                       Per 1. Januar 2021 fusionierten die CVP und die BDP auf Bundesebene zur neu
+                       gegründeten Partei «Die Mitte». Mit Ausnahme der CVP Kanton Uri (UR) übernahmen
+                       in den Folgejahren 2021 und 2022 alle kantonalen Fraktionen der beiden Parteien
+                       entsprechend ihrer Mutterparteien die Fusion bzw. die Namensänderung. Es handelte
+                       sich in den Kantonen, in denen nur eine der beiden Parteien bestand, meist die CVP,
+                       um eine Namensänderung, nicht um eine Fusion. Die Variablen cvp_parl_s und
+                       cvp_parl_sa bzw. bdp_parl_s und bdp_parl_sa werden ab dem Jahr der
+                       Fusion/Namensänderung (2021 oder 2022, je nach Kanton) als Missing codiert.
+                       Umgekehrt zu den Variablen mitte_parl_s und mitte_parl_sa, welche nachträglich
+
+
+
+                                                                                                             4
+
+                                                                       erstellt wurden und bis zum Vorjahr der Fusion/Namensänderung als Missing codiert
+                                                                       sind. Falls im Jahr der Fusion/Namensänderung keine Gesamterneuerungswahl
+                                                                       stattfand, bei welcher Die Mitte unter neuem Namen hätte antreten können, wurden
+                                                                       die Sitze bzw. Sitzanteile der sich auflösenden Parteien CVP und BDP addiert und als
+                                                                       aufsummierter Betrag in der Variable mitte_parl_s bzw. mitte_parl_sa ausgegeben.
+                                                                       In folgenden Kantonen fand die Fusion bzw. die Namensänderung im Jahr 2021 statt:
+                                                                       ZH, BE, LU, SZ, OW, NW, GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG,
+                                                                       VD, VS und NE. In folgenden Kantonen fand sie im Jahr 2022 statt: TI, GE und JU. Im
+                                                                       Kanton Uri fand als einzigem Kanton keine Namensänderung statt, deshalb werden
+                                                                       dort die Variablen cvp_parl_s bzw. cvp_parl_sa weiterhin verwendet.
+
+                                                                       Missings:
+                                                                       AI (1979–2023): Werte für 1984, 1995, 1999, 2007 nach Vatter et al. (2012) möglich
+                                                                       und auf Anfrage erhältlich.
+
+                                                                       AR (1979–2002): Zuteilung entsprechend Quelldatei BFS ab 2003 übernommen. Für
+                                                                       vorangegangene Zeitpunkte sind Angaben von Vatter et al. (2012) vorhanden und auf
+                                                                       Anfrage erhältlich.
+
+
+ [Partei(gruppe)]_parl_v 5          Für 1979–2008:                     Prozentueller Wähleranteil jeweiliger Partei(gruppe) bzw. Parteiloser in
+                                                                       Parlamentswahlen (vgl. oben).
+
+                                    Primär BFS (diverse
+                                                                       Hinweise:
+                                    Jahrgänge): Statistik der
+                                                                       Für Kantone mit mehrheitlichem oder vollständigem Majorzsystem bei
+                                    kantonalen Wahlen;
+                                    Sekundär (ergänzend,               Parlamentswahlen (GR, AI, AR; UR bis 1988, OW bis 1985, NW bis 1981) ist nur die
+                                    korrigierend) APS (diverse         Anzahl Sitze ausgewiesen. Für UR sind Wähleranteile erst ab 2008 verfügbar
+                                    Jahrgänge).                        (BFS/IPW). Für SZ sind die 13 (offiziell Proporz-, d.h. relatives Mehr im ersten
+                                                                       (einzigen) Wahlgang reicht) Einerwahlkreise (gemäss BFS-Vorgehen, abweichend
+                                                                       vom APS) in die Wähleranteilsberechnungen einbezogen (nur bis 1987 in BFS-
+                                                                       Tabelle speziell so vermerkt).
+
+
+5 Variablenkürzel siehe FN 2; Zusatz _parl_v steht für Wähleranteil bei Parlamentswahlen.
+
+
+
+
+                                                                                                                                                              5
+
+                             In GR funktionieren alle Wahlkreise nach Majorz; in AR alle ausser einem (d.h. 14 von
+                             65 Parlamentariern werden nach Proporz gewählt); in AI ausser in einem Wahlkreis
+                             (der aber auch nach Majorz wählt) überall Wahl durch Handerheben an Versammlung,
+                             d.h. automatisch auch Majorz.
+                             In UR ist die Wählerstärke bis und mit 2007 nicht ermittelbar, da in einigen
+                             Wahlkreisen Majorzwahlen, z.T. an offenen Gemeindeversammlungen, stattfinden (in
+                             14 Einerwahlkreisen bei insgesamt 64 Mandaten).
+
+                             Für ZG hingegen sind Angaben zu Wähleranteilen in der BFS-Statistik enthalten,
+                             keine Missings (hier existieren zwei Wahlkreise, die ihre je zwei Mandate per Majorz
+                             vergeben; also vier von 80 Mandaten per Majorz (vgl. auch KV ZG 78.2).
+                             (BS und SH ebenfalls keine Missings: Je ein Einerwahlkreis, der aber ebenfalls nach
+                             Proporz wählt, d.h. relatives Mehr im ersten (einzigen) Wahlgang reicht.)
+
+                             GE: «Übrige» und MCG/MCR 2005–2008 wurden mittels Online-Quelle
+                             (https://www.ge.ch/elections/20051009/) nachgetragen
+
+                             BDP 2008: Wähleranteile sind «fiktiv», anteilsmässig berechnet aus dem Verhältnis
+                             BDP-Sitze zu SVP-Sitze = Verhältnis BDP-Wählerprozent zu SVP-Wählerprozent
+                             (analog: DSP BS 1982/83, DSP FR 1989/90).
+
+Für 2009–2023:              2009–2023: Für 2009–2023 wurde neu der BFS-Datensatz verwendet, der die
+                            Zuteilung der Mischlisten enthält (je-d-17.02.05.02.03). Dieser geht zurück bis ins Jahr
+BFS: Kantonale              2007. Falls Wahlen vor 2009 stattgefunden, die anschliessende, nächste Wahl aber
+Parlamentswahlen:
+                            über 2009 hinausging, wurden die Werte der Datensammlung 1979–2008 verwendet
+Parteistärken mit Zuteilung
+der Mischlisten auf die     (Ausnahmen (I) UR: hier wurden für/ab 2008 vom BFS zum ersten Mal Parteistärken
+Parteien (BFS-Nummer:       berechnet; (II) SZ, SG, TG: hier Diskrepanz von ca. 1,5 bzw. 3 Prozentpunkten bei
+je-d-17.02.05.02.03)        «Übrigen» im Vergleich der Datensammlung mit und ohne Zuteilung der Mischlisten,
+https://www.bfs.admin.ch/ daher hier bereits für 2008 auf Parteistärken mit Zuteilung der Mischlisten vertraut;
+asset/de/24385265           (III) VD: Verteilungen zwischen Parteien variieren stark, abhängig davon, ob Zuteilung
+(zuletzt heruntergeladen
+am: 21.06.2023)
+
+
+                                                                                                                       6
+
+der Mischliste gegeben oder nicht. Hier Zuteilung der Mischlisten auf Parteien ab
+2007).
+
+Achtung: Aufgrund der Zuteilung der Parteistärken von Parteien, die an Mischlisten
+beteiligt sind (i.d.R. ab 2009), ist anzunehmen, dass ab 2009 der Anteil «Übrige» z.T.
+niedriger, jener von Kleinstparteien z.T. grösser ist als in der vorangegangenen
+Datensammlung. In ebendieser wurde ein Teil der Kleinstparteien, deren Parteistärke
+aufgrund von Mischlisten nicht genau nachvollzogen werden konnte, in «Übrige»
+abgetragen. Berücksichtigung bei Berechnung Fragmentierungs- und Volatilitäts-
+massen, die auf diesen Parteistärken beruhen, nötig, z.B. durch Berücksichtigung nur
+jener Parteien, die auch effektiv einen Parlamentssitz errungen haben.
+
+Das Total der Wähleranteile pro Partei kann teilweise minimal von 100 Prozent
+abweichen.
+
+Bis 2018 wurden alle Angaben zu den prozentualen Wähleranteilen prinzipiell auf eine
+Dezimalzahl gerundet. Ab 2019 wurden diese Daten aber so exakt wie möglich aus
+der BFS-Quelle (BFS-Nummer: je-d-17.02.05.02.03) übernommen, so dass die
+prozentualen Wähleranteile nun prinzipiell auf zwölf bis 14 Dezimalstellen genau
+angegeben sind. Die Angaben der Wähleranteile wurden bis zum jeweils letzten
+Wahljahr zurückkorrigiert, so dass für alle Jahre der Legislaturperioden, die das Jahr
+2019 enthalten, prinzipiell exakte Daten mit bis zu 14 Dezimalstellen vorhanden sind.
+Dies um in Kantonen, die im Jahr 2019 keine Gesamterneuerungswahlen
+veranstalteten, vermeintliche Veränderungen der prozentualen Wähleranteile im
+Vergleich zum Vorjahr (2018) zu vermeiden.
+Es gibt zwei Ausnahmefälle, in denen die Angaben zu den prozentualen
+Wähleranteilen auch nach 2019 nur auf zwei Dezimalstellen genau sind:
+    1. SH: Alle prozentualen Wähleranteile der auf die Kantonsratswahlen 2020 in
+        SH folgende Legislaturperiode (2020-2023) sind auf zwei Dezimalstellen
+        gerundet, da sie nur so von BFS zur Verfügung gestellt werden.
+    2. Übrige und Parteilose: Die prozentualen Wähleranteile von Übrige und
+        Parteilose sind in gewissen Fällen auf lediglich zwei Dezimalstellen genau
+        angegeben, da das BFS alle nicht einzeln gelisteten Kleinparteien (Übrige) und
+
+
+
+                                                                                         7
+
+       Parteilosen als dieselbe Kategorie «Übrige» behandelt und jeweils die genaue
+       Angabe zu den Parteilosen, die in diesem Datensatz in eine eigene Kategorie
+       eingeteilt sind, nur in den Anmerkungen des Dokuments als Wert mit zwei
+       Dezimalstellen aufgeführt wird.
+
+AR: Ab 2011 können hier laut Quelle Parteienstärken zugewiesen werden.
+Entsprechende Informationen wurden hier so übernommen.
+
+CSP-OW: Laut Quelle (BFS) ohne Verbindung zur CSP-Schweiz, dadurch CSP-OW-
+Sitze gemäss BFS ab 2014 nicht CSP, sondern separat aufzuführen. Auf Basis von
+Informationen der CSP-OW (https://www.csp-ow.ch/partei/geschichte/) wird
+angenommen, dass bereits ab 2010 alle Sitze und Stimmen der CSP-OW und nicht
+der CSP zuzurechnen sind: «Von 2005–2009 pflegte die CSP Obwalden als
+assoziiertes Mitglied Kontakte zur unabhängigen CSP Schweiz […]. Seit 2010 ist die
+CSP Obwalden in keine nationale Gruppierung mehr eingebunden, sie politisiert –
+christlichsozialem Gedankengut verpflichtet – ausschliesslich auf kantonaler Ebene».
+Im Gegensatz zu den kantonalen Parlamentswahlen folgt die Zusammenstellung des
+BFS zu den kantonalen Regierungswahlen ebenfalls dieser Einteilung und ordnet
+entsprechende Regierungssitze ab 2010 der CSP-OW zu: «CSP-Obwalden. Diese
+hatte zwischen 2005 und 2010 den Beobachterstatus bei der CSP-Schweiz inne. 2010
+wurde die Zusammenarbeit mit der CSP-Schweiz beendet, weshalb sie ab 2010 unter
+«Übrige» geführt wird» (FN 5 Tabellenblatt «2010», BFS-Datensatz Nummer je-d-
+17.02.06.01). Entsprechend wurden alle Parlamentssitze der Partei ab 2010 der CSP-
+OW zugeschrieben (und nicht der CSP Schweiz).
+
+Per 1. Januar 2021 fusionierten die CVP und die BDP auf Bundesebene zur neu
+gegründeten Partei «Die Mitte». Mit Ausnahme der CVP Kanton Uri (UR) übernahmen
+in den Folgejahren 2021 und 2022 alle kantonalen Fraktionen der beiden Parteien
+entsprechend ihrer Mutterparteien die Fusion bzw. die Namensänderung. Es handelte
+sich in den Kantonen, in denen nur eine der beiden Parteien bestand, meist die CVP,
+um eine Namensänderung, nicht um eine Fusion. Die Variablen cvp_parl_v und
+bdp_parl_v werden ab dem Jahr der Fusion/Namensänderung (2021 oder 2022, je
+nach Kanton) als Missing codiert. Umgekehrt zur Variable mitte_parl, welche
+nachträglich erstellt wurde und bis zum Vorjahr der Fusion/Namensänderung als
+Missing codiert ist. Falls im Jahr der Fusion/Namensänderung keine
+
+
+
+                                                                                      8
+
+                                            Gesamterneuerungswahl stattfand, bei welcher Die Mitte unter neuem Namen hätte
+                                            antreten können, wurden die Sitze bzw. Sitzanteile der sich auflösenden Parteien CVP
+                                            und BDP addiert und als aufsummierter Betrag in der Variable mitte_parl_v
+                                            ausgegeben.
+                                            In folgenden Kantonen fand die Fusion bzw. die Namensänderung im Jahr 2021 statt:
+                                            ZH, BE, LU, SZ, OW, NW, GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG,
+                                            VD, VS und NE. In folgenden Kantonen fand sie im Jahr 2022 statt: TI, GE und JU. Im
+                                            Kanton Uri fand als einzigem Kanton keine Namensänderung statt, deshalb wird dort
+                                            die Variable cvp_parl_v weiterhin verwendet.
+
+parl_election   Für 1979–2008:              Parlamentswahlen im entsprechenden Jahr
+
+                APS (diverse Jahrgänge),
+                BFS (diverse Jahrgänge):    Kategorien:
+                Statistik der kantonalen    0 = Keine Parlamentswahlen
+                Wahlen.                     1 = Parlamentswahlen (Gesamterneuerung)
+                Ersatzwahlen für einzelne
+                Sitze wurden nicht          Hinweise:
+                berücksichtigt.             AI: Bis zu einer Verfassungsänderung (angenommen 04.94, in Kraft 04.95) wurden
+                                            alle Grossräte alljährlich gewählt, ausser jene (ca. sieben) aus Oberegg, welche seit
+                                            1972 im 3-Jahres-Rhythmus (an der Urne) gewählt wurden (Huber-Schlatter 1987:
+                                            168, KV). Seit 1995: Alle Grossräte im 4-Jahres-Turnus (KV).
+
+                Für 2009–2023:
+
+                BFS: Kantonale
+                Parlamentswahlen:
+                Mandatsverteilung nach
+                Parteien und Kanton
+                (BFS-Nummer: je-d-
+                17.02.05.01.03)
+                https://www.bfs.admin.ch/
+                asset/de/24385274
+                (zuletzt heruntergeladen
+                am: 16.05.2023)
+
+
+
+                                                                                                                                    9
+
+parlegisl   Für 1979–2008:              Amtsdauer des Parlaments in Jahren
+
+            1998: Lutz/Strohmann
+            (1998: 64)
+            2008:
+            Kantonsparlamente.ch
+            (2008: Zeile 1.4.1)
+            1986: Moser (1987: 44)
+            Verfassungen für AR, AI
+
+            Für 2009–2023:
+
+            BFS: Kantonale
+            Parlamentswahlen:
+            Mandatsverteilung nach
+            Parteien und Kanton
+            (BFS-Nummer: je-d-
+            17.02.05.01.03)
+            https://www.bfs.admin.ch/
+            asset/de/24385274
+            (zuletzt heruntergeladen
+            am: 16.05.2023)
+turnout_e   Für 1979–2023:              Wahlbeteiligung bei (vorangegangenen) Gesamterneuerungswahlen ins
+                                        Kantonsparlament (in Prozent der Stimmberechtigten).
+            BFS:
+            Kantonale
+            Parlamentswahlen: Stärke    Hinweise:
+            der Parteien und            Für vereinzelte Kantone bestehen Lücken in den Zeitreihen, v.a. bedingt durch
+            Wahlbeteiligung (BFS-
+                                        Majorzwahlen in den entsprechenden Jahren (UR, NW, AR, AI, GR).
+            Nummer: je-d-
+            17.02.05.02.01):
+            https://www.bfs.admin.ch/   Für nachfolgende Kantone wurden die Angaben für 1979–2008/09 korrigiert, falls
+            asset/de/24385279           diese von den aktuelleren Datengrundlagen abweichen, sodass ebendiese Angaben
+                                        der aktuelleren Datengrundlagen ausgewiesen werden; dies betrifft:
+
+
+                                                                                                                         10
+
+            (zuletzt heruntergeladen      ZH, BE, LU, SZ, OW, GL, ZG, FR, SO, BS, BL, SH, AG, TG, TI, VD, VS, NE, GE.
+            am: 16.05.2023).
+
+            Kantonale
+            Parlamentswahlen:
+            Parteistärken mit Zuteilung
+            der Mischlisten auf die
+            Parteien (BFS-Nummer:
+            je-d-17.02.05.02.03):
+            https://www.bfs.admin.ch/
+            asset/de/24385265
+            (zuletzt heruntergeladen
+            am: 21.06.2023).
+
+rae         Eigene Berechnungen           Rae-Index der Parteienfraktionalisierung (effektive Anzahl Parteien, die ins
+            basierend auf angestellter    Parlament gewählt wurden).
+            Erhebung.
+
+                                          Berechnung:
+                                          rae = [1 – Summe(si2)] * 100,
+
+                                          Hinweise:
+                                          si ist der Sitzanteil der Partei i in Prozent; Angehörige der «Übrigen» wurden nicht
+                                          berücksichtigt.
+
+                                          Im Weiteren gilt: rae = 1 – (1 / (partfrakt * 100))
+
+partfrakt   Eigene Berechnungen           Parteifraktionalisierung: Effektive Parteienzahl basierend auf den Sitzanteilen
+            basierend auf angestellter    der Parteien in den kantonalen Parlamenten gemessen anhand des Laakso-
+            Erhebung.                     Taagepera-Index.
+
+
+                                          Berechnung:
+                                          partfrakt =1 / Summe(si2)
+
+
+
+
+                                                                                                                                 11
+
+                                             Hinweise:
+                                             si ist der Sitzanteil der Partei i in Prozent; Sitzanteil der «Übrigen» wurde nicht
+                                             berücksichtigt, diese aber nicht von der Gesamtsitzzahl abgezogen
+                                             → ergibt durchgehend etwas zu hohe Parteienzahl*.
+
+                                             * Sitzanteile und nicht Wähleranteile verwendet, womit Proporz-Kantone besser mit
+                                             Majorz-Kantonen vergleichbar sind (vgl. dazu reg_konk).
+
+                                             * Alternative Berechnung: Abzug der «Übrigen» von der Gesamtsitzzahl
+                                             → ergibt durchgehend zu tiefe Parteienzahl.
+
+                                             * Überlegene alternative Berechnung (vgl. Taagepera 1997: 146f.): Berücksichtigung
+                                             des Sitzanteils der «Übrigen» in zwei Szenarien: Es handelt sich um eine nicht-
+                                             identifizierte Partei oder jeder Sitz entspricht einer anderen Partei/Listenverbindung,
+                                             wobei die «Übrigen» entsprechend nicht von der Gesamtsitzzahl abgezogen werden.
+                                             → gemittelter Wert, wobei unklar ob über- oder unterschätzt wird (vgl. dazu sowie zu
+                                             alternativen Indizes: Ladner 2004: 78f.). Lijphart (1994: 70) entscheidet sich aus
+                                             pragmatischen Gründen für den Taagepera-Index: Stärkste Verbreitung, sehr ähnlich
+                                             zu Alternativen, einfache Berechnung. Ladner (2004: 79) warnt allerdings davor,
+                                             diesen Index bei zu hohem Anteil «Übriger» zu verwenden.
+
+parl_party      Eigene Berechnungen          (Absolute) Anzahl Parlamentsparteien. Parteilose und «Übrige» mitgerechnet.
+                basierend auf angestellter
+                Erhebung.
+
+wett_parl_se    Eigene Berechnungen          100 Prozent minus Sitzanteil stärkste Partei (Parlament) (importance of the offer)
+                basierend auf angestellter
+                Erhebung.
+
+wett_parl2_se   Eigene Berechnungen          Unterschied grösste–zweitgrösste Partei (Parlament) in Prozent aller Sitze
+                basierend auf angestellter
+                Erhebung.
+
+
+
+
+                                                                                                                                       12
+
+wett_parl_vo            Eigene Berechnungen          100 Prozent minus Wähleranteil stärkste Partei (Parlament) (importance of the
+                        basierend auf angestellter   offer)
+                        Erhebung.
+
+wett_parl2_vo           Eigene Berechnungen          Unterschied grösste–zweitgrösste Partei (Parlament) in Prozent aller
+                        basierend auf angestellter   Wählerstimmen
+                        Erhebung.
+
+max_sitzzahl_parl       Eigene Berechnungen          Anzahl der Sitze der stärksten Partei
+                        basierend auf angestellter
+                        Erhebung.
+
+n_bestplatzierte_parl   Eigene Berechnungen          Anzahl stärkster/bestplatzierter Parteien
+                        basierend auf angestellter
+                        Erhebung.
+                                                     Hinweise:
+                                                     I.d.R. ist dies nur eine Partei, d.h. die Variable nimmt den Wert 1 an. Es ist aber
+                                                     möglich, dass zwei oder mehr Parteien die gleiche, nach der Wahl maximale Anzahl
+                                                     an Sitzen haben. Falls dies der Fall ist, wird der Wert vergeben, der die Anzahl der
+                                                     entsprechenden Parteien beschreibt; Bsp. SH 1996–1999: zwei Parteien mit 23
+                                                     Sitzen, wobei insgesamt keine Partei mehr als 23 Sitze erreichte, wodurch hier der
+                                                     Wert 2 vergeben wird.
+
+volatilitaet_se         Eigene Berechnungen          Parlamentarische Volatilität berechnet anhand der Nettoveränderung der
+                        basierend auf Erhebung       Sitzanteile der Parteien* (innerparlamentarisches System, vgl. Pedersen 1997:
+                        zu Mandaten.                 88) zwischen zwei kantonalen Parlamentswahlen
+
+
+                                                     Berechnung:
+                                                     V = ½ Summe[absolut(si,t – si,t-1)]
+
+                                                     Hinweise:
+                                                     si ist der Sitzanteil der Partei i in Prozent
+                                                     * Parteilose und «Übrige» je als eine Partei mitberücksichtigt.
+
+
+
+
+                                                                                                                                            13
+
+                                                    Angabe aus Wahljahr übernommen für die Jahre der zugehörigen Legislaturperiode.
+
+                                                    Für JU 1979–1981 wurde der Wert von BE eingesetzt, da dies nach den ersten
+                                                    jurassischen Wahlen 1979 den Erfahrungswert darstellt.
+
+                                                    Die Namensänderung der CVP zu Die Mitte bzw. die Fusion der CVP und der BDP zu
+                                                    Die Mitte in den Jahren 2021 oder 2022 (je nach Kanton; ausgenommen UR, wo die
+                                                    CVP unter diesem Namen weiter besteht) bewirkt eine vermeintliche starke Erhöhung
+                                                    der Volatilitätswerte im nächstfolgenden Wahljahr. Dieser Effekt ist in Kantonen, in
+                                                    denen die CVP bzw. die BDP besonders grosse Anteile verzeichnen konnte, so stark,
+                                                    dass ein Vielfaches der üblichen Volatilitätswerte erreicht wird (bspw. OW 43.64%
+                                                    oder GR 52.50%)!
+
+volatilitaet_se_election   Eigene Berechnungen      Parlamentarische Volatilität berechnet anhand der Nettoveränderung der
+                           basierend auf Erhebung   Sitzanteile der Parteien (innerparlamentarisches System, vgl. Pedersen 1997:
+                           zu Mandaten.             88) zwischen zwei kantonalen Parlamentswahlen (nur für Wahljahre angezeigt)
+
+                                                    Hinweise:
+                                                    Berechnung und Hinweise siehe Variable volatilitaet_se.
+
+volatilitaet_se_year       Eigene Berechnungen      Parlamentarische Volatilität berechnet anhand der Nettoveränderung der
+                           basierend auf Erhebung   Sitzanteile der Parteien, standardisiert für den zeitlichen Abstand zwischen zwei
+                           zu Mandaten.             kantonalen Parlamentswahlen
+
+
+                                                    Berechnung:
+                                                    volatilitaet_se_year = volatilitaet_se / parlegisl
+
+
+                                                    Hinweise:
+                                                    Angabe aus Wahljahr übernommen für die Jahre der zugehörigen Legislaturperiode.
+
+                                                    Gegenüber volatilität_se wird hier dafür korrigiert, dass bei Wahlen mit langer Dauer
+                                                    der Legislatur (z.B. FR mit 5-jähriger Legislaturperiode) von Wahl zu Wahl grössere
+                                                    Verschiebungen zu erwarten sind als bei Wahlen mit kurzer Dauer der Legislatur (AI
+
+
+
+                                                                                                                                            14
+
+                                               bis 1995 mit einjähriger Legislaturperiode). Hier werden prinzipiell die Netto-Sitz-
+                                               veränderungen pro Jahr errechnet.
+
+                                               Die Namensänderung der CVP zu Die Mitte bzw. die Fusion der CVP und der BDP zu
+                                               Die Mitte in den Jahren 2021 oder 2022 (je nach Kanton; ausgenommen UR, wo die
+                                               CVP unter diesem Namen weiter besteht) bewirkt eine vermeintliche starke Erhöhung
+                                               der Volatilitätswerte im nächstfolgenden Wahljahr. Dieser Effekt ist in Kantonen, in
+                                               denen die CVP bzw. die BDP besonders grosse Anteile verzeichnen konnte, so stark,
+                                               dass ein Vielfaches der üblichen Volatilitätswerte erreicht wird (bspw. OW 43.64%
+                                               oder GR 52.50%)!
+
+volatilitaet_vo   Eigene Berechnungen          Wählervolatilität berechnet anhand der Nettoveränderung der prozentuellen
+                  basierend auf angestellter   Wähleranteile der Parteien* (ausserparlamentarisches System) zwischen zwei
+                  Erhebung.                    kantonalen Parlamentswahlen (Pedersen 1979, 1997: 88)
+
+
+                                               Berechnung:
+                                               V = ½ Summe[absolut(vi,t – vi,t-1)]
+
+                                               Hinweise:
+                                               vi ist der Wähleranteil der Partei i in Prozent
+                                               * Parteilose und «Übrige» je als eine Partei mitberücksichtigt.
+
+                                               Angabe aus Wahljahr übernommen für die Jahre der zugehörigen Legislaturperiode.
+
+                                               Bei gleichem (aktiven) Elektorat gibt v den minimalen Prozentanteil der Wechsel-
+                                               wähler an. v ist die minimale Wahrscheinlichkeit, dass ein zufällig ausgewählter
+                                               Wähler zwischen zwei Wahlen unterschiedlich gewählt hat (Pedersen 1997: 88).
+
+                                               Die Namensänderung der CVP zu Die Mitte bzw. die Fusion der CVP und der BDP zu
+                                               Die Mitte in den Jahren 2021 oder 2022 (je nach Kanton; ausgenommen UR, wo die
+                                               CVP unter diesem Namen weiter besteht) bewirkt eine vermeintliche starke Erhöhung
+                                               der Volatilitätswerte im nächstfolgenden Wahljahr. Dieser Effekt ist in Kantonen, in
+                                               denen die CVP bzw. die BDP besonders grosse Anteile verzeichnen konnte, so stark,
+
+
+
+
+                                                                                                                                      15
+
+                                               dass ein Vielfaches der üblichen Volatilitätswerte erreicht wird (bspw. OW 43.64%
+                                               oder GR 52.50%)!
+
+volatilitaet_vo   Eigene Berechnungen          Wählervolatilität berechnet anhand der Nettoveränderung der prozentuellen
+                  basierend auf angestellter   Wähleranteile der Parteien (ausserparlamentarisches System) zwischen zwei
+                  Erhebung.                    kantonalen Parlamentswahlen (Pedersen 1979, 1997: 88) (nur für Wahljahre
+                                               angezeigt)
+
+                                               Berechnung und Hinweise siehe Variable volatilitaet_vo
+
+gallagher         Eigene Berechnungen          Effektive Disproportionalität des Wahlsystems, gemessen an den prozentualen
+                  basierend auf angestellter   Sitz- (si) resp. Wähleranteilen (vi) für jede politische Partei (ohne «Übrige»)
+                  Erhebung.
+
+                                               Berechnung:
+                                               Gallagher-Index:
+
+
+
+                                               gallagher_n = gallagher * (–1)
+
+                                               gallagher_n bildet nicht die Disproportionalität, sondern die Proportionalität ab.
+
+parl_left         Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+                  basierend auf angestellter   Linkes Lager
+                  Erhebung.
+                                               Anteil Parlamentssitze von SP, DSP, GP, FGA, PDA, PSA, DN, SoL, POCH.
+
+parl_cent         Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+                  basierend auf angestellter   Mitte-Lager
+                  Erhebung.
+                                               Anteil Parlamentssitze von CVP, LDU, CSP, CSP-OW, EVP und glp.
+
+
+
+
+                                                                                                                                    16
+
+parl_right    Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+              basierend auf angestellter   Rechtes Lager
+              Erhebung.
+                                           Anteil Parlamentssitze von FDP, LP, SVP, BDP, Lega, EDU, PPN, PRR, MCG/MCR,
+                                           SD, Rep (Republikaner) und FPS/APS (Freiheitspartei/Autopartei)
+
+parl_kath     Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+              basierend auf angestellten   Katholisches Lager
+              Erhebungen.
+                                           Anteil Parlamentssitze katholischer Parteien (CVP, CSP und CSP-OW)
+
+parl_gruene   Eigene Berechnungen          Parteiliche Parlamentszusammensetzung nach politischen Lagern:
+              basierend auf angestellten   Grünes Lager
+              Erhebungen.
+                                           Anteil Parlamentssitze von GP, FGA, DN und glp
+
+
+
+
+                                                                                                                         17
+
+Regierung und Regierungsratswahlen
+Indikator        Quelle(n)                    Bemerkungen
+
+sitzreg          Für 1979–2008:               Anzahl Sitze in der Regierung
+
+                 BFS (diverse Jahrgänge),
+                 APS (diverse Jahrgänge).
+
+                 Für 2009–2023:
+
+                 BFS: Kantonale
+                 Regierungswahlen:
+                 Mandatsverteilung nach
+                 Partei und Kanton (BFS-
+                 Nummer: je-d-
+                 17.02.06.01)
+                 https://www.bfs.admin.ch/
+                 asset/de/24385274
+                 (zuletzt heruntergeladen
+                 am: 16.05.2023)
+reg_election     Für 1979–2008:               Regierungsratswahlen im entsprechenden Jahr
+
+                 APS (diverse Jahrgänge –
+                 bis 2007).                   Kategorien:
+                                              0 = keine Regierungsratswahlen
+                 Ab 1999: BFS (diverse        1 = Gesamterneuerungswahlen
+                 Jahrgänge): Statistik der    2 = Teilerneuerungswahlen
+                 kantonalen Wahlen.           5 = Ersatzwahlen
+                                              6 = Gesamt- und Ersatzwahlen
+                 (AG 1990:
+                 http://www.ag.ch/staag/dat   Hinweise:
+                 en/B17/index.htm)            Vor 1999 teilweise Widersprüche zwischen APS und BFS.
+
+
+
+
+                                                                                                      18
+
+                                     Für 2009–2023:
+
+                                     BFS: Kantonale
+                                     Regierungswahlen:
+                                     Mandatsverteilung nach
+                                     Partei und Kanton (BFS-
+                                     Nummer: je-d-
+                                     17.02.06.01)
+                                     https://www.bfs.admin.ch/
+                                     asset/de/24385267
+                                      (zuletzt heruntergeladen
+                                     am: 16.05.2023)
+
+ [Partei(gruppe)]_reg_s 6            Für 1979–2008:                      Anzahl Regierungssitze jeweiliger Partei(-gruppe) bzw. Parteiloser
+                                                                         (inkl. Ersatzwahlen, Parteiwechsel)
+                                     Wahlen vor 1980: APS
+                                     (diverse Jahrgänge)
+                                     Wahlen ab 1980: BFS
+                                     (diverse Jahrgänge):
+                                     Statistik der kantonalen
+                                     Wahlen.
+                                     Sekundär (ergänzend,
+                                     korrigierend) z.T. APS
+                                     (diverse Jahrgänge).
+                                     Für AR bis 2002: APS
+                                     (diverse Jahrgänge),
+                                     ergänzend Huber
+                                     (Staatskundelexikon,
+                                     versch. Auflagen)
+
+                                     Für 2009–2023:                      Hinweise:
+
+
+
+
+6 Variablenkürzel siehe FN 2; Kürzel _reg_s steht für Sitze in der Regierung.
+
+
+
+
+                                                                                                                                              19
+
+           BFS: Kantonale               2009–2023: Für 2009–2023 wurden neu für die Mandatsverteilung in der Regierung
+           Regierungswahlen:            die Parteien POCH, Sol., EVP, SD, Rep., EDU, FPS und MCG/MCR hinzugefügt,
+           Mandatsverteilung nach       damit die Regierungsparteien mit jenen der Parlamente übereinstimmen.
+           Partei und Kanton (BFS-
+           Nummer: je-d-
+           17.02.06.01):                NW: Gemäss NZZ (https://www.nzz.ch/nidwalden_demokratisches_nidwalden_
+           https://www.bfs.admin.ch/    gruene_nidwalden-1.760582, zuletzt geöffnet am 07.01.2019) ist die Partei
+           asset/de/24385267            «Demokratisches Nidwalden (DN)» – Kürzel «dn» im Datensatz – 2004 der GPS
+           (zuletzt heruntergeladen     beigetreten und nannte sich mit Gültigkeit 01.01.2009 «Grüne Nidwalden». Hier
+           am: 16.05.2023)              werden alle Wahlergebnisse des ehemaligen «dn» ab Wahljahr 2010 unter der «gp»
+                                        abgetragen.
+
+                                        Per 1. Januar 2021 fusionierten die CVP und die BDP auf Bundesebene zur neu
+                                        gegründeten Partei «Die Mitte». Mit Ausnahme der CVP Kanton Uri (UR) übernahmen
+                                        in den Folgejahren 2021 und 2022 alle kantonalen Fraktionen der beiden Parteien
+                                        entsprechend ihrer Mutterparteien die Fusion bzw. die Namensänderung. Es handelte
+                                        sich in den Kantonen, in denen nur eine der beiden Parteien bestand, meist die CVP,
+                                        um eine Namensänderung, nicht um eine Fusion. Die Variablen cvp_reg_s und
+                                        bdp_reg_s werden ab dem Jahr der Fusion/Namensänderung (2021 oder 2022, je
+                                        nach Kanton) als Missing codiert. Umgekehrt zur Variable mitte_reg_s, welche
+                                        nachträglich erstellt wurde und bis zum Vorjahr der Fusion/Namensänderung als
+                                        Missing codiert ist. Falls im Jahr der Fusion/Namensänderung keine
+                                        Gesamterneuerungswahl stattfand, bei welcher Die Mitte unter neuem Namen hätte
+                                        antreten können, wurden die Sitze bzw. Sitzanteile der sich auflösenden Parteien CVP
+                                        und BDP addiert und als aufsummierter Betrag in der Variable mitte_reg_s
+                                        ausgegeben.
+                                        In folgenden Kantonen fand die Fusion bzw. die Namensänderung im Jahr 2021 statt:
+                                        ZH, BE, LU, SZ, OW, NW, GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG,
+                                        VD, VS und NE. In folgenden Kantonen fand sie im Jahr 2022 statt: TI, GE und JU. Im
+                                        Kanton Uri fand als einzigem Kanton keine Namensänderung statt, deshalb wird dort
+                                        die Variable cvp_reg_s weiterhin verwendet.
+
+reg_left   Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+           basierend auf angestellter   Linkes Lager
+           Erhebung.
+                                        Anteil Regierungssitze von SP, DSP, GP, FGA, PDA, PSA, DN, SoL, POCH.
+
+
+                                                                                                                          20
+
+reg_cent     Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+             basierend auf angestellter   Mitte-Lager
+             Erhebung.
+                                          Anteil Regierungssitze von CVP, LDU, CSP, CSP-OW, EVP, glp und Die Mitte.
+
+reg_right    Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+             basierend auf angestellter   Rechtes Lager
+             Erhebung.
+                                          Anteil Regierungssitze von FDP, LP, SVP, BDP, Lega, EDU, PPN, PRR, MCG/MCR,
+                                          SD, Rep (Republikaner) und FPS/APS (Freiheitspartei/Autopartei).
+
+reg_kath     Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+             basierend auf angestellter   Katholisches Lager
+             Erhebung.
+                                          Anteil Regierungssitze katholischer Parteien (CVP, CSP und CSP-OW).
+
+reg_gruene   Eigene Berechnungen          Parteiliche Regierungszusammensetzung nach politischen Lagern:
+             basierend auf angestellter   Grünes Lager
+             Erhebung.
+                                          Anteil Regierungssitze von GP, FGA, DN und glp.
+
+reg_party    Eigene Berechnungen          Anzahl Regierungsparteien
+             basierend auf angestellter
+             Erhebung.
+                                          Hinweise:
+                                          Parteilose (zusammen) und «Übrige» als jeweils eine Partei gerechnet.
+
+reg_konk     Eigene Berechnungen          Summierte Wähleranteile der Regierungsparteien in Prozent.
+             basierend auf angestellter
+             Erhebung.
+
+
+
+
+                                                                                                                        21
+
+konk_2             Eigene Berechnungen          Konkordanz
+                   basierend auf angestellter
+                   Erhebung.
+                                                Berechnung:
+                                                konk_2 = reg_konk / 100 + reg_party
+
+spann              Eigene Berechnungen          Parteipolitische Spannweite der Regierungskoalition
+                   basierend auf angestellter
+                   Erhebung.
+                                                Kategorien: Bei einer vertretenen Parteigruppe (reg_left, reg_cent, reg_right) aus:
+                                                1 = Links-Rechts-Spektrum
+                                                2 = Zwei Parteigruppen
+                                                3 = Alle Parteigruppen
+
+wett_reg_se        Eigene Berechnungen          100 Prozent minus Sitzanteil stärkste Partei (Reg.)
+                   basierend auf angestellter
+                   Erhebung.
+                                                Hinweise:
+                                                Parteilose (zusammen) als eigene Partei gerechnet.
+
+wett_reg2_se       Eigene Berechnungen          Unterschied grösste–zweitgrösste Partei (Reg.) in Prozent aller Sitze
+                   basierend auf angestellter
+                   Erhebung.
+                                                Hinweise:
+                                                Parteilose (zusammen) als eigene Partei gerechnet.
+
+max_sitzzahl_reg   Eigene Berechnungen          Anzahl der Sitze der stärksten Regierungspartei
+                   basierend auf angestellter
+                   Erhebung.
+
+
+
+
+                                                                                                                                      22
+
+n_bestplatzierte_reg   Eigene Berechnungen          Anzahl stärkster/bestplatzierter Regierungsparteien
+                       basierend auf angestellter
+                       Erhebung.
+                                                    Hinweise:
+                                                    I.d.R. ist dies nur eine Partei, sprich die Variable nimmt den Wert 1 an. Es ist aber
+                                                    möglich, dass zwei oder mehr Parteien die gleiche, nach der Wahl maximale Anzahl
+                                                    an Sitzen haben. Falls dies der Fall ist, wird der Wert vergeben, der die Anzahl der
+                                                    entsprechenden Parteien beschreibt.
+
+g                      Eigene Berechnungen          Grösse der typischen Regierungspartei
+                       basierend auf angestellter
+                       Erhebung.
+                                                    Berechnung:
+                                                    g = Σ (gi^2) / Σ (gi)
+
+                                                    Hinweise:
+                                                    gi: Sitzanteil der i-ten Regierungspartei.
+                                                    Ohne Berücksichtigung von «Übrigen» und Parteilosen.
+
+o                      Eigene Berechnungen          Grösse der typischen Oppositionspartei
+                       basierend auf angestellter
+                       Erhebung.
+                                                    Berechnung:
+                                                    o = Σ (oi^2)/ Σ (oi)
+
+                                                    Hinweise:
+                                                    oi: Sitzanteil der i-ten Oppositionspartei.
+                                                    Ohne Berücksichtigung von «Übrigen» und Parteilosen.
+
+ieo                    Eigene Berechnungen          Effektive Stärke der Oppositionsparteien gegenüber den Regierungsparteien im
+                       basierend auf angestellter   Parlament gemessen am «Index of Effective Opposition» (Altman/Pérez-Liñán
+                       Erhebung.                    2002)
+
+
+                                                    Berechnung:
+
+
+
+                                                                                                                                            23
+
+                                       ieo = o / g
+
+                                       Hinweise:
+                                       g = Σ (gi^2) / Σ (gi)
+                                       gi: Sitzanteil der i-ten Regierungspartei.
+                                       o = Σ (oi^2) / Σ (oi)
+                                       oi: Sitzanteil der i-ten Oppositionspartei.
+                                       Ohne Berücksichtigung von «Übrigen» und Parteilosen.
+
+                                       o ist ein Indikator für die Grösse der typischen Oppositionspartei, wobei sich die
+                                       Fragmentierung der Opposition dämpfend auswirkt. Entsprechend ist g ein Indikator
+                                       für die Grösse der typischen Regierungspartei.
+
+                                       ieo hat den Wert nahe bei 0, wenn die Regierung das Parlament kontrolliert, und den
+                                       Wert nahe bei 1, wenn sich Regierungs- und Parlamentsparteien die Waage halten.
+                                       Der Index nimmt Werte über 1 an, wenn die Opposition das Parlament kontrolliert.
+
+balance   Eigene Berechnungen          Effektives Gleichgewicht zwischen Oppositionsparteien und Regierungsparteien
+          basierend auf angestellter   im Parlament gemessen am «Index of Competitiveness» (Altman/Pérez-Liñán
+          Erhebung.                    2002)
+
+
+                                       Berechnung:
+                                       c = 1 – |(g – o)/100|
+
+                                       Hinweise:
+                                       g und o siehe oben.
+
+                                       c hat den Wert nahe bei 0, wenn die Regierung (oder theoretisch auch die Opposition,
+                                       nicht aber in Schweizer Praxis) das Parlament kontrolliert, und den Wert nahe bei 1,
+                                       wenn sich Regierungs- und Parlamentsparteien die Waage halten.
+
+
+
+
+                                                                                                                             24
+
+Wahlsystem
+Indikator    Quelle(n)                    Bemerkungen
+
+proporz      1979–1982:                   Proportionalitätsgrad des Wahlsystems bei Parlamentswahlen (drei Kategorien)
+             Vatter (2002: 119f.)
+
+             1983–2000:                   Kategorien:
+             Vatter et al. (2004).        1 = reiner Majorz
+             OW, NW und UR korrigiert     2 = gemischt (Majorz/Proporz)
+             gemäss Vatter (2002: 119)    3 = reiner Proporz
+             und APS 1992 (zu UR).        [Vgl. für Ausprägungen: Lutz/Strohmann 1998: 80]
+
+             2001–2012:                   Hinweise:
+             Kantonsverfassungen          Als Änderungsjahr wird das erste Wahljahr gemäss neuem Wahlsystem codiert.
+
+             2013–2018:
+             Flick Witzig (2019)
+
+             2019–2023:
+             Kantonsverfassungen
+
+             GR ab 2022:
+             Kanton Graubünden:
+             Wahlanleitung für die
+             Gesamterneuerungswahle
+             n vom 15. Mai 2022
+             Grosser Rat und
+             Regierung.
+             https://www.gr.ch/DE/publi
+             kationen/abstimmungenwa
+             hlen/Grossratswahlen-
+             2022/Documents/Wahlanl
+
+
+
+
+                                                                                                                       25
+
+           eitung_15_Mai_2022_dt_l
+           owres_final.pdf
+           bzw. Kantonsverfassung
+           (zuletzt heruntergeladen
+           am 22.09.2023)
+           und
+           Kanton Graubünden:
+           Publikation FAQ
+           Grossratswahlen 2022,
+           Wahlsystem, Doppelter
+           Pukelsheim
+           https://www.gr.ch/DE/publi
+           kationen/abstimmungenwa
+           hlen/Grossratswahlen-
+           2022/faq/vier/Seiten/01_D
+           oppelter_Pukelsheim.aspx
+           (zuletzt heruntergeladen
+           am 22.09.2023)
+
+proporz4   1979–1982:                   Proportionalitätsgrad des Wahlsystems bei Parlamentswahlen (vier Kategorien)
+           Vatter (2002: 119f.),
+           Kantonsverfassungen.
+                                        Kategorien:
+           1983–2000:                   1 = reiner Majorz
+           Vatter et al. (2004),        2 = gemischt mit absolutem Mehr im 1. Wahlgang
+           Kantonsverfassungen.         3 = gemischt mit relativem Mehr
+           OW, NW und UR korrigiert     4 = reiner Proporz
+           gemäss Vatter (2002: 119)    [Vgl. für Ausprägungen: Lutz/Strohmann 1998: 80]
+           und APS 1992 (zu UR).
+                                        Hinweise:
+           2001–2012:                   Als Änderungsjahr wird das erste Wahljahr gemäss neuem Wahlsystem codiert.
+           Kantonsverfassungen
+
+           2013–2018:
+           Flick Witzig (2019)
+
+
+
+                                                                                                                     26
+
+              2019–2023:
+              Kantonsverfassungen
+
+proporz3reg   1979–1982:                   Proportionalitätsgrad der Wahlsysteme bei Parlaments- und
+              Vatter (2002: 119f.);        Regierungsratswahlen
+              Kantonsverfassungen.
+
+              1983–2000:                   Kategorien: Kombinierter Indikator mit Maximalwert von sechs Punkten mit...
+              Vatter et al. (2004),
+              Kantonsverfassungen.         … (a) maximal drei Punkte für Regierungsratswahlen:
+              OW, NW und UR korrigiert     0 = für Majorz mit erforderlichem Mehr von 50 Prozent im 1. Wahlgang.
+              gemäss Vatter (2002: 119)    1 = für Majorz mit erforderlichem Mehr von 33.3 Prozent im 1. Wahlgang (GE)
+              und APS 1992 (zu UR).        3 = für Proporz (ZG, TI);
+
+              2001–2012:                   … (b) maximal drei Punkten für Parlamentswahlen:
+              Kantonsverfassungen          0 = reiner Majorz.
+                                           1 = gemischt mit abs. Mehr im 1. Wahlgang
+              2013–2018:                   2 = gemischt mit relativem Mehr
+              Flick Witzig (2019)          3 = reiner Proporz
+
+              2019–2023:
+              Kantonsverfassungen
+
+reg_proporz   1987:                        Wahlverfahren bei Regierungsratswahlen (Dummy)
+              Moser (1987)
+
+              1998:                      Kategorien:
+              Lutz/Strohmann (1998: 29) 0 = Majorz
+                                         1 = Proporz
+              2004:
+              Bochsler et al. (2004: 51) Hinweise:
+                                         GE bis 2012: 1/3 der gültigen Stimmen im 1. Wahlgang reichen bereits für einen
+              2007:                      Sitzgewinn aus («majorité qualifiée»; siehe Art. 96 und Art. 98, «Loi sur l’exercice des
+              Bochsler/Goridis (2009),   droits politiques (LEDP)», in Kraft seit 1983; Kölz 1987: 3–4)  mit 0.2 codiert.
+
+
+
+                                                                                                                                27
+
+Stand des Datensatzes im
+Dezember 2008)
+
+Rest, 1979–2008:
+extra-/intrapoliert
+
+2009–2012:
+Kantonsverfassungen
+
+2013–2018:
+Flick Witzig (2019)
+
+2019–2023:
+Kantonsverfassungen
+
+
+
+
+                           28
+
+Direkte Demokratie
+Indikator                  Quelle(n)                    Bemerkungen
+
+abst_total                 Eigene Berechnungen          Jährliche Anzahl Abstimmungen
+(vormals abstot)           basierend auf angestellter
+                           Erhebung.
+                                                        Berechnung:
+                                                        abst_total = init_total + ref_total + gegenvor_init
+
+init_total                 Eigene Berechnungen          Jährliche Anzahl Abstimmungen über Volksinitiativen: Verfassungs- und
+(vormals initot)           basierend auf angestellter   Gesetzesinitiativen, konstruktive Referenden, verfahrensbezogene Anträge,
+                           Erhebung.                    Behörden- und Gemeindeinitiativen.
+
+
+                                                        Berechnung:
+                                                        init_total = volksinit + vi_verfahr + sonstige_init
+
+ref_total                  Eigene Berechnungen          Jährliche Anzahl Abstimmungen über Referenden:
+(vormals reftot)           basierend auf angestellter   Obligatorische und fakultative Referenden.
+                           Erhebung.
+
+                                                        Berechnung:
+                                                        ref_total = ref_obl + ref_fak
+
+gegenvor_init              Eigene Berechnungen          Jährliche Anzahl Abstimmungen über Gegenvorschläge von Volksinitiativen
+                           basierend auf angestellter
+                           Erhebung.
+
+Nachfolgend: Unterkategorien von init_total und ref_total
+ref_obl                  c2d, Centre of Direct        Jährliche Anzahl obligatorischer Referenden (inkl. obl_finref)
+                         Democracy
+                         (http://c2d.ch/country/CH)
+
+
+
+
+                                                                                                                                    29
+
+            Landsgemeindekantone:
+            Eigene Erhebungen aus
+            den Landsgemeinde-
+            protokollen (LGP), OW
+            auch Amtsblatt (AB)
+
+ref_fak     c2d, Centre of Direct        Jährliche Anzahl fakultativer Referenden (inkl. Behördenreferenden) (inkl.
+            Democracy                    fak_finref)
+            (http://c2d.ch/country/CH)
+
+            Landsgemeindekantone:
+            Eigene Erhebungen aus
+            den Landsgemeinde-
+            protokollen (LGP), OW
+            auch Amtsblatt (AB)
+
+volksinit   c2d, Centre of Direct        Jährliche Anzahl Volksinitiativen
+            Democracy
+            (http://c2d.ch/country/CH)
+                                         Hinweise:
+            Landsgemeindekantone:        Verfassungs- und Gesetzesinitiativen (inkl. Initiativen mit Gegenvorschlag, ohne reine
+            Eigene Erhebungen aus        Abstimmungen über Gegenvorschläge: Gegenvorschläge zählen nicht als eigene
+            den Landsgemeinde-           Initiative sondern werden separat in gegenvor_init erfasst) sowie konstruktive
+            protokollen (LGP), OW        Referenden (LG-Kantone: auch Abänderungsanträge); Urnenkantone ohne Behörden-
+            auch Amtsblatt (AB)          und Gemeindeinitiativen (LG-Kantone mit ebendiesen).
+
+
+                                         Hinweise:
+                                         Vorgehen GL:
+                                            1.) Alle Memorialanträge, wenn aufrechterhalten resp.an LG explizit vertreten und
+                                                effektiv zur Abstimmung gelangt
+                                            2.) Anträge auf Änderung (d.h. inkl. partieller Streichung und Ablehnung) von LG-
+                                                Vorlagen, gegeben effektiv zur Abstimmung gelangt
+
+
+
+
+                                                                                                                             30
+
+sonstige_init            c2d, Centre of Direct        Behörden- und Gemeindeinitiativen
+                         Democracy
+                         (http://c2d.ch/country/CH)
+
+vi_verfahr               Landsgemeindekantone:        Jährliche Anzahl Abstimmungen über Ordnungs-/verfahrensbezogene Anträge
+                         Eigene Erhebungen aus        von Seiten der Bürger (=Initiativen)
+                         den Landsgemeinde-
+                         protokollen (LGP), OW
+                         auch Amtsblatt (AB)          Hinweise:
+                                                      Anträge auf Rückweisung und/oder Verschiebung eines Sachgeschäfts.
+
+                                                      Nur für AI und GL relevant, d.h. hier entsprechend codiert, sonst überall 0.
+
+Nachfolgend: Unterkategorien von ref_obl und ref_fak
+obl_finref               c2d, Centre of Direct       Jährliche Anzahl Abstimmungen über obligatorische Finanzreferenden
+                         Democracy                   (Ausgaben)
+                         (http://c2d.ch/country/CH)
+
+                                                      Hinweise:
+                                                      Bestandteil von ref_obl
+
+fak_finref               c2d, Centre of Direct        Jährliche Anzahl Abstimmungen über fakultative Finanzreferenden (Ausgaben)
+                         Democracy                    (inkl. entsprechenden Behördenreferenden)
+                         (http://c2d.ch/country/CH)
+
+                                                      Hinweise:
+                                                      Bestandteil von ref_fak
+
+
+turnout_v                c2d, Centre of Direct        Stimmbeteiligung bei kantonalen Volksabstimmungen in Prozent.
+                         Democracy
+                         (http://c2d.ch/country/CH)
+                                                      Hinweise:
+                                                      Durchschnitt aller kantonalen Volksabstimmungen im betreffenden Jahr (mehrere
+                                                      Abstimmungen am selben Abstimmungsdatum wurden je separat gezählt; jede
+
+
+                                                                                                                                      31
+
+                                         Abstimmungsvorlage [nicht etwa jeder Abstimmungstermin] fliesst mit gleichem
+                                         Gewicht ein; Schätzungen der Stimmbeteiligung bei Landsgemeinden sind hier nicht
+                                         ausgewiesen).
+
+
+ddr_snDDI   2015–2023:                   Sub-National Direct Democracy Index
+            Leemann/Stadelmann-
+            Steffen (2022)
+                                         Hinweise:
+                                         Index aus Leemann/Stadelmann-Steffen (2022) übernommen. Der Index wurde bis
+                                         anhin pro Kanton nur zu einem Zeitpunkt gemessen, dessen Wert in diesem
+                                         Datensatz für die Jahre 2015 bis 2023 verwendet wurde.
+
+                                         Theoretischer Wertebereich: 0 (wenig ausgebaute direktdemokratische Rechte) bis 2
+                                         (stark ausgebaute direktdemokratische Rechte).
+                                         Für Detailbemerkungen zur Berechnung und zum Vorgehen: Vgl. Kapitel «Measuring
+                                         Sub-National Direct Democracy» in Leemann/Stadelmann-Steffen (2022) und Kapitel
+                                         «A3 Sub-National Direct Democracy Index (snDDI)» ab S. 37 im Online Appendix.
+
+ddr_stutz   1997–2003:                   Direktdemokratische Rechte (Index)
+            Fischer (2009),
+            Notengebung JU
+            korrigiert.                Hinweise:
+                                       Index konstruiert nach Stutzer (1999).
+            1980 und 2008:             Theoretischer Wertebereich: 1 (wenig ausgebaute direktdemokratische Rechte) bis 6
+            Eigene Erhebungen auf      (stark ausgebaute direktdemokratische Rechte).
+            Basis von Trechsel/Serdült Berechnung: Mittelwert aus gir, vir, grr, frr.
+            (1999) bzw. Kantons-
+            verfassungen.              Stichtag: Für die Jahre 1997–2003 ist der 1. April (Fischer 2009: 65), für alle anderen
+                                       Jahre jeweils der 31. Dezember des jeweiligen Jahres der Stichtag der Erhebung.
+            1970 und 1996:
+            Stutzer (1999), eigene     Für Detailbemerkungen zum Vorgehen: Vgl. Dokumente «Notizen zu Teilindizes
+            Erhebungen auf Basis von Stutzer-Index» und «Gewichtung Fak-Obl GesRef SH BL SO AG» (kann auf Anfrage
+            Trechsel/Serdült (1999)    zugestellt werden).
+
+
+
+
+                                                                                                                                 32
+
+      bzw. Kantons-                Durch Quellen gesicherte Zeitpunkte: 1980, 1992, 1996–2003, 2008–2018. Lineare
+      verfassungen.                Interpolation: Werte von 1980 übernommen für 1979.
+
+      1992:
+      Stutzer/Frey (2000),
+      eigene Erhebungen auf
+      Basis von Trechsel/Serdült
+      (1999) bzw.
+      Kantonsverfassungen.
+
+      Eigene Erhebungen für die
+      Jahre 2008–2018 unter
+      Einbezug von Daten von
+      Leeman/Stadelmann-
+      Steffen (2019) und
+      Kuster/Leuzinger (2019).
+
+gir   siehe ddr_stutz              Gesetzesinitiativrecht (Index)
+
+
+                                   Hinweise:
+                                   Index konstruiert nach Stutzer (1999); siehe ddr_stutz für detailliertere Erläuterungen.
+
+vir   siehe ddr_stutz              Verfassungsinitiativrecht (Index)
+
+
+                                   Hinweise:
+                                   Index konstruiert nach Stutzer (1999); siehe ddr_stutz für detailliertere Erläuterungen.
+
+grr   siehe ddr_stutz              Gesetzesreferendumsrecht (Index)
+
+
+                                   Hinweise:
+                                   Index konstruiert nach Stutzer (1999); siehe ddr_stutz für detailliertere Erläuterungen.
+
+
+
+
+                                                                                                                          33
+
+frr   siehe ddr_stutz   Finanzreferendumsrecht (Index)
+
+
+                        Hinweise:
+                        Index konstruiert nach Stutzer (1999); siehe ddr_stutz für detailliertere Erläuterungen.
+
+
+
+
+                                                                                                               34
+
+Gemeinden (politisches System und deren Verhältnis zum Kanton)
+Indikator         Quelle(n)                 Bemerkungen
+
+ddr_gde_obl       Flick Witzig und Vatter   Ausmass kantonaler Vorgaben zu obligatorischen Referenden
+                  (2023: 25)
+
+                                            Kategorien:
+                                            0 = Kaum kantonale Vorgaben
+                                            1 = Keine zwingenden Urnenabstimmungen
+                                            2 = Obligatorische Referenden überwiegend in Parlamentsgemeinden
+                                            3 = Urnenabstimmungen in allen Gemeinden
+
+                                            Hinweise:
+                                            Die Daten stammen aus dem Jahr 2019.
+
+ddr_gde_fak       Flick Witzig und Vatter   Ausmass kantonaler Vorgaben zu fakultativen Referenden
+                  (2023: 27)
+
+                                            Kategorien:
+                                            0 = Kaum kantonale Vorgaben
+                                            1 = Fakultative Referenden gegen Beschlüsse der Exekutive
+                                            2 = Fakultative Referenden nur in Parlamentsgemeinden
+                                            3 = Fakultative Referenden in allen Gemeinden
+
+                                            Hinweise:
+                                            Die Daten stammen aus dem Jahr 2019.
+
+ddr_gde_init      Flick Witzig und Vatter   Ausmass kantonaler Vorgaben zu kommunalen Initiativen
+                  (2023: 29)
+
+                                            Kategorien:
+                                            0 = Kaum kantonale Vorgaben
+                                            1 = Kantonale Vorgaben nur für Parlamentsgemeinden
+
+
+
+                                                                                                               35
+
+                                      2 = Kantonale Vorgaben für alle Gemeinden
+
+                                      Hinweise:
+                                      Die Daten stammen aus dem Jahr 2019.
+
+ dez_policy     Mueller (2015: 219)   Policy-Dezentralisierung
+
+
+                                      Kategorien:
+
+                                      Hinweise:
+                                      Die Daten stammen aus dem Jahr 2015, wobei diese für die Jahre 2015 bis 2023
+                                      verwendet wurden. Es handelt sich um gerundete und standardisierte Werte.
+
+ dez_polity     Mueller (2015: 219)   Polity-Dezentralisierung
+
+                                      Kategorien:
+
+                                      Hinweise:
+                                      Die Daten stammen aus dem Jahr 2015, wobei diese für die Jahre 2015 bis 2023
+                                      verwendet wurden. Es handelt sich um gerundete und standardisierte Werte.
+
+ dez_politics   Mueller (2015: 219)   Politics-Dezentralisierung
+
+                                      Kategorien:
+
+                                      Hinweise:
+                                      Die Daten stammen aus dem Jahr 2015, wobei diese für die Jahre 2015 bis 2023
+                                      verwendet wurden. Es handelt sich um gerundete und standardisierte Werte.
+
+
+
+
+Bibliographie
+
+
+
+                                                                                                                     36
+
+APS Année Politique Suisse (div. Jahre): Schweizerische Politik. Bern: Institut für Politikwissenschaft. URL: https://anneepolitique.swiss/.
+Altman, David; Pérez-Liñán, Anibal (2002): Assessing the Quality of Democracy: Freedom, Competitiveness and Participation in Eighteen Latin
+American Countries. Democratization 9(2): 85-100.
+BFS Bundesamt für Statistik (div. Jahre): Statistik zu kantonalen Wahlen. Neuchâtel: Bundesamt für Statistik. URL: https://www.bfs.admin.ch/
+bfs/de/home/statistiken/politik/wahlen/kantonale-parlamenswahlen.html; https://www.bfs.admin.ch/bfs/de/home/statistiken/politik/wahlen/kantonale-
+regierungswahlen.html.
+Bochsler, Daniel; Goridis, Niki (2009): Database, Swiss cantonal election rules in change. Zürich: Universität Zürich.
+Bochsler, Daniel; Koller, Christophe; Sciarini, Pascal; Traimond, Sylvie; Trippolini, Ivar (2004): Die Schweizer Kantone unter der Lupe: Behörden,
+Personal, Finanzen. Bern: Haupt.
+Fischer, Justina A.V. (2009): Development of Direct Democracy in Swiss Cantons between 1997 and 2003. Working Paper. Munich Personal RePEc
+Archive. URL: http://mpra.ub.uni-muenchen.de/16140/.
+Flick Witzig, Martina (2019): Institutionelle Grundlagen der Parlamentswahlen in den Kantonen. Datensatz zu Tabelle 2.1. In Das politische System
+der Schweiz, vierte Auflage, Adrian Vatter. Baden-Baden: Nomos.
+Flick Witzig, Martina; Vatter, Adrian (2023): Direkte Demokratie in den Gemeinden. Basel: NZZ Libro.
+Huber, Alfred (1999): Staatskunde Lexikon Information, Tatsachen, Zusammenhänge. 5., überarb. und erw. Ausg. Luzern: Verlag Schweizer Lexikon.
+Huber, Alfred (2002): Staatskunde Lexikon Information, Tatsachen, Zusammenhänge. 6., überarb. und aktualisierte Aufl. Luzern: Verlag Schweizer
+Lexikon.
+Huber, Alfred (2009): Staatskunde Lexikon Information, Tatsachen, Zusammenhänge. 7., erw. und aktualisierte Aufl. Luzern: Verlag Schweizer
+Lexikon.
+Huber-Schlatter, Andreas (1987): Politische Institutionen des Landsgemeinde-Kantons Appenzell Innerrhoden. Bern: Haupt.
+Kantonsparlamente.ch (2008): Parlamente im Vergleich. URL: http://www.kantonsparlamente.ch/.
+Kölz, Alfred (1987): Probleme des kantonalen Wahlrechts. I. Teil: Allgemeine Grundlagen und Parlamentswahlen. Schweizerisches Zentralblatt für
+Staats- und Gemeindeverwaltungen 88(1): 1–43.
+Kuster, Claudio; Leuzinger, Lukas (2019): Datensatz                   «Kantonale     politische   Systeme»,     Stand     November     2019.   URL:
+https://napoleonsnightmare.ch/kantonale-politische-systeme/.
+
+
+
+
+                                                                                                                                                 37
+
+Ladner, Andreas (2004): Stabilität und Wandel von Parteien und Parteiensystem: Eine vergleichende Analyse von Konfliktlinien, Parteien und
+Parteiensystemen in den Schweizer Kantonen. Wiesbaden: VS Verlag für Sozialwissenschaften.
+Leemann, Lucas; Stadelmann-Steffen, Isabelle (2019): Subnational Direct Democracy and Democratic Satisfaction across National Borders. Paper
+präsentiert an der SPSA Annual Conference 2019 & Dreiländertagung, Zürich.
+Leemann, Lucas; Stadelmann-Steffen, Isabelle (2022): Satisfaction With Democracy: When Government by the People Brings Electoral Losers and
+Winners Together. Comparative Political Studies 55(1): 93–121.
+Lijphart, Arend (1994): Electoral Systems and Party Systems: A Study of Twenty-Seven Democracies, 1945–1990. New York: Oxford University
+Press.
+Lutz, Georg; Strohmann, Dirk (1998): Wahl- und Abstimmungsrecht in den Kantonen. Bern: Haupt.
+Moser, Christian (1987): Aspekte des Wahlrechts in den Kantonen. Bern: Forschungszentrum für schweizerische Politik.
+Mueller, Sean (2015): Theorising Decentralization: Comparative Evidence from Sub-national Switzerland. Colchester: ECPR Press.
+Pedersen, Mogens N. (1979): The dynamics of European party systems: changing patterns of electoral volatility. European Journal of Political
+Research 7(1): 1–26.
+Pedersen, Mogens N. (1997): The dynamics of European party systems. European Journal of Political Research 31(1): 83–98.
+Stutzer, Alois (1999): Demokratieindizes für die Kantone der Schweiz. Zürich: Institut für empirische Wirtschaftsforschung, Universität Zürich. (IEW
+Arbeitspapier, 23)
+Stutzer, Alois; Frey, Bruno S. (2000): Stärkere Volksrechte – Zufriedenere Bürger: eine mikroökonometrische Untersuchung für die Schweiz. Swiss
+Political Science Review 6(3): 1–30.
+Taagepera, Rein (1997): Effective Number of Parties for Incomplete Data. Electoral Studies 16(2): 145–151.
+Trechsel, Alexander H.; Serdült, Uwe (1999): Kaleidoskop Volksrechte. Die Institutionen der direkten Demokratie in den schweizerischen Kantonen
+1970–1996. Basel, Genf & München: Helbing & Lichtenhahn.
+Vatter, Adrian (2002): Kantonale Demokratien im Vergleich. Entstehungsgründe, Interaktionen und Wirkungen politischer Institutionen in den
+Schweizer Kantonen. Opladen: Leske+Budrich.
+Vatter, Adrian; Freitag, Markus; Müller, Christoph; Bühlmann, Marc (2004): Politische, soziale und ökonomische Daten zu den Schweizer Kantonen,
+1983–2000 [Datensatz]. Bern: Institut für Politikwissenschaft.
+
+
+
+
+                                                                                                                                                 38
+
+Vatter, Adrian; Bühlmann, Marc; Schaub, Hans-Peter; Dlabac, Oliver; Wirz, Rolf (2012): Datensatz Demokratiequalität in den Schweizer Kantonen
+[Datensatz]. Bern: Universität Bern, Institut für Politikwissenschaft.
+
+
+
+
+                                                                                                                                           39
+

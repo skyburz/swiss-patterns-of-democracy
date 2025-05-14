@@ -462,11 +462,18 @@ elections_ui <- function(id) {
       column(
         width = 12,
         card(
-          card_header("Analyse"),
+          card_header("Quellen & Daten"),
           card_body(
+            style = "min-height: 600px; padding: 15px;",  # Set minimum height
             tabsetPanel(
               tabPanel(
-                "Datentabelle",
+                "Quelle(n)",
+                div(style = "overflow-y: auto; height: 100%;",
+                    uiOutput(ns("source_info"))
+                )
+              ),
+              tabPanel(
+                "Daten",
                 DTOutput(ns("data_table"))
               )
             )
@@ -2430,7 +2437,133 @@ elections_server <- function(id, selected_data) {
         layout(title = "Details zu Wahlen (Implementierung folgt)")
     })
     
-    # Data table
+    # Source information lookup
+    output$source_info <- renderUI({
+      req(filtered_data())
+      req(input$variables)
+      
+      # Get the selected variable
+      selected_var <- input$variables
+      
+      # Function to search for variables in documentation
+      find_variable_info <- function(variable_name) {
+        # Try to load the structured documentation first
+        structured_doc_path <- "data/structured_variable_documentation.csv"
+        if (file.exists(structured_doc_path)) {
+          structured_doc <- read.csv(structured_doc_path, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+          
+          # Look for exact match of variable name
+          var_index <- which(structured_doc$Variable == variable_name)
+          
+          if (length(var_index) > 0) {
+            # Return the structured information
+            return(list(
+              source = structured_doc$Quelle.n.[var_index[1]],
+              remarks = structured_doc$Bemerkungen[var_index[1]]
+            ))
+          }
+        }
+        
+        # If the variable isn't found in the structured documentation or the file doesn't exist,
+        # try to read from cleaned_variable_documentation.csv
+        var_doc_path <- "data/cleaned_variable_documentation.csv"
+        if (file.exists(var_doc_path)) {
+          tryCatch({
+            var_doc <- read.csv(var_doc_path, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+            
+            # Look for the variable name (exact match)
+            var_index <- which(var_doc[,1] == variable_name)
+            
+            if (length(var_index) > 0) {
+              # Create the source and remarks strings
+              source_text <- var_doc[var_index[1], 2]
+              remarks_text <- var_doc[var_index[1], 3]
+              
+              # Look for additional lines with the variable's calculation or notes
+              if (var_index[1] < nrow(var_doc)) {
+                additional_lines <- var_index[1] + 1
+                while(additional_lines <= nrow(var_doc) && 
+                      (var_doc[additional_lines, 1] == "" || 
+                       grepl(variable_name, var_doc[additional_lines, 1]))) {
+                  
+                  if (var_doc[additional_lines, 2] != "") {
+                    source_text <- paste(source_text, var_doc[additional_lines, 2], sep = "\n\n")
+                  }
+                  if (var_doc[additional_lines, 3] != "") {
+                    remarks_text <- paste(remarks_text, var_doc[additional_lines, 3], sep = "\n\n")
+                  }
+                  additional_lines <- additional_lines + 1
+                }
+              }
+              
+              return(list(
+                source = source_text,
+                remarks = remarks_text
+              ))
+            }
+          }, error = function(e) {
+            print(paste("Error reading variable documentation:", e$message))
+          })
+        }
+        
+        # Generic fallback for variables without specific info
+        return(list(
+          source = "Keine Quelleninformation gefunden",
+          remarks = "Keine Bemerkungen verfügbar"
+        ))
+      }
+      
+      # Find information for the selected variable
+      info <- find_variable_info(selected_var)
+      
+      # Create variable label for display
+      var_label <- switch(selected_var,
+                          "parlament_sitze" = "Anzahl Parlamentssitze der Parteien",
+                          "parlament_sitze_anteil" = "Anteil Parlamentssitze der Parteien",
+                          "parlament_votes" = "Wähleranteil der Parteien (%)",
+                          "parl_election" = "Parlamentswahl im Jahr",
+                          "parlegisl" = "Amtsdauer des Parlaments in Jahren",
+                          "turnout_e" = "Wahlbeteiligung Parlamentswahlen",
+                          "rae" = "Rae-Index der Parteienfraktionalisierung",
+                          "partfrakt" = "Parteifraktionalisierung: Effektive Parteienzahl",
+                          "parl_party" = "Anzahl Parlamentsparteien",
+                          "max_sitzzahl_parl" = "Anzahl der Sitze der stärksten Partei",
+                          "volatilitaet_se" = "Volatilität nach Pedersen",
+                          "volatilitaet_vo" = "Volatilität nach Pedersen",
+                          "gallagher" = "Gallagher-Index der Disproportionalität",
+                          selected_var) # default is to use the variable name itself
+      
+      # Create UI elements with better styling
+      tagList(
+        div(style = "margin-top: 20px;"), # Extra space above
+        h4(paste0("Variable: ", var_label, " (", selected_var, ")"), 
+           style = "color: #1b6d80; border-bottom: 1px solid #ddd; padding-bottom: 8px;"),
+        
+        div(class = "row", style = "margin-top: 15px;",
+            div(class = "col-12",
+                h5("Quellen:", style = "font-weight: bold; color: #1b6d80;"),
+                div(
+                  style = "white-space: pre-wrap; overflow-y: visible; 
+                          padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f8f9fa;",
+                  HTML(gsub("\n", "<br>", info$source))
+                )
+            )
+        ),
+        
+        div(class = "row", style = "margin-top: 15px;",
+            div(class = "col-12",
+                h5("Bemerkungen:", style = "font-weight: bold; color: #1b6d80;"),
+                div(
+                  style = "white-space: pre-wrap; overflow-y: visible; 
+                          padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f8f9fa;", 
+                  HTML(gsub("\n", "<br>", info$remarks))
+                )
+            )
+        )
+      )
+    })
+    
+    # Data table output
     output$data_table <- renderDT({
       req(filtered_data())
       req(input$variables)
@@ -2467,5 +2600,4 @@ elections_server <- function(id, selected_data) {
       cat("Statistische Zusammenfassung für Wahlen (Implementierung folgt)")
     })
   })
-} #   U p d a t e d   m o d u l e   t o   s h o w   c a n t o n - s p e c i f i c   v a l u e s   f o r   g o v e r n m e n t   v a r i a b l e s   i n   t i m e   t r e n d  
- 
+} # Updated module to show canton-specific values for government variables in time trend
